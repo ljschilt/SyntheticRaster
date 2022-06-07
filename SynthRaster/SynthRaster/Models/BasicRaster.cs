@@ -13,6 +13,8 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Core.Data;
 using ArcGIS.Core.Data.Raster;
 
+// Note: This might have to be renamed to SynthRaster
+
 namespace SynthRaster.Models
 {
 	class BasicRaster : PropertyChangedBase , IDisposable
