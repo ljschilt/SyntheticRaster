@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32510.428
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectRasterTest", "ProjectRasterTest\ProjectRasterTest.csproj", "{40F9431D-6458-4648-842D-0EC23BF28A59}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{40F9431D-6458-4648-842D-0EC23BF28A59}.Debug|x64.ActiveCfg = Debug|x64
+		{40F9431D-6458-4648-842D-0EC23BF28A59}.Debug|x64.Build.0 = Debug|x64
+		{40F9431D-6458-4648-842D-0EC23BF28A59}.Release|x64.ActiveCfg = Release|x64
+		{40F9431D-6458-4648-842D-0EC23BF28A59}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {31620F0B-135B-494E-9F33-FED5642A7673}
+	EndGlobalSection
+EndGlobal
