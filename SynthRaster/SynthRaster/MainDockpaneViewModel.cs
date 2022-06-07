@@ -16,7 +16,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Windows.Threading;
+using System.Windows.Input;
+using SynthRaster.Models;
 
 namespace SynthRaster
 {
@@ -24,7 +26,40 @@ namespace SynthRaster
 	{
 		private const string _dockPaneID = "SynthRaster_MainDockpane";
 
-		protected MainDockpaneViewModel() { }
+		protected MainDockpaneViewModel() {
+			Raster = new BasicRaster()
+			{
+				XCellSize = 1,
+				YCellSize = 1,
+				NumColumns = 2,
+				NumRows = 2,
+				TopLeftCoordinatesX = 0,
+				TopLeftCoordinatesY = 0,
+				RasterOutputDirectory = "C:\\Users\\lukes\\OneDrive\\Documents\\ResearchFiles\\SynthRaster"
+			};
+		}
+
+		private ICommand _displayRaster = null;
+		public BasicRaster Raster { get; set; }
+
+		public ICommand DisplayRaster
+		{
+			get
+			{
+				if (_displayRaster == null)
+				{
+					_displayRaster = new RelayCommand(() =>
+					{
+						// save the info from the current user control
+						var output = $@"X Cell Size: {BasicRaster.XCellSize}, Y Cell Size: {BasicRaster.YCellSize}, Number of Columns: {BasicRaster.NumColumns}, Number Of Rows: {BasicRaster.NumRows}, Top Left X Coordinate: {BasicRaster.TopLeftCoordinatesX}, Top Left Y Coordinate: {BasicRaster.TopLeftCoordinatesY}, Raster Output Directory: {BasicRaster.RasterOutputDirectory}";
+						ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(output);
+
+						BasicRaster.CreateRaster();
+					}, () => true);
+				}
+				return _displayRaster;
+			}
+		}
 
 		/// <summary>
 		/// Show the DockPane.
@@ -41,7 +76,7 @@ namespace SynthRaster
 		/// <summary>
 		/// Text shown near the top of the DockPane.
 		/// </summary>
-		private string _heading = "My DockPane";
+		private string _heading = "";
 		public string Heading
 		{
 			get { return _heading; }
