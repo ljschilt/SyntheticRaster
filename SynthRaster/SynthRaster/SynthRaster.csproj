@@ -123,8 +123,19 @@
     <AddInContent Include="DarkImages\AddInDesktop32.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MainDockpane.xaml.cs">
+      <DependentUpon>MainDockpane.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MainDockpaneViewModel.cs" />
+    <Compile Include="Models\BasicRaster.cs" />
     <Compile Include="Module1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="MainDockpane.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--
