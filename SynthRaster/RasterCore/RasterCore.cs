@@ -14,9 +14,8 @@ namespace RasterCore
 		private string NoDataValue { get; set; }
 		private double[,] rasterGrid { get; set; }
 
-		public RasterCore()
+		protected RasterCore()
 		{
-			int myInt = 42;
 		}
 
 		public RasterCore(string PathToOpen)
@@ -87,6 +86,35 @@ namespace RasterCore
 		public void WriteToFile(string PathToWriteTo)
 		{
 
+		}
+
+		public static RasterCore Zeroes(
+			double cellSize, 
+			int numColumns, 
+			int numRows, 
+			double topLeftXCoordinate, 
+			double topLeftYCoordinate, 
+			string noDataValue = "-9999")
+		{
+			var newRaster = new RasterCore();
+			newRaster.cellSize = cellSize;
+			newRaster.numColumns = numColumns;
+			newRaster.numRows = numRows;
+			newRaster.topLeftCoordinatesX = topLeftXCoordinate;
+			newRaster.topLeftCoordinatesY = topLeftYCoordinate;
+			newRaster.NoDataValue = noDataValue;
+			newRaster.rasterGrid = new double[numRows, numColumns];
+
+			// Set the array to be empty.
+			for (int currentRow = 0; currentRow < numRows; currentRow++)
+			{
+				for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
+				{
+					newRaster.rasterGrid[currentRow,currentColumn] = 0;
+				}
+			}
+
+			return newRaster;
 		}
 	}
 }
