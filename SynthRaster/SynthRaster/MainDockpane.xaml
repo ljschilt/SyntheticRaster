@@ -30,5 +30,30 @@
                 </TextBlock.ToolTip>
       </TextBlock>
         </DockPanel>
-    </Grid>
+
+		  <Label x:Name="lblCellSizeX" Content="X Cell Size" HorizontalAlignment="Left" Margin="10,20,0,0" VerticalAlignment="Top" Width="119"/>
+		  <TextBox x:Name="txtCellSizeX" Text = "{Binding Path=Raster.XCellSize, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,46,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="64"/>
+
+		  <Label x:Name="lblCellSizeY" Content="Y Cell Size" HorizontalAlignment="Left" Margin="150,20,0,0" VerticalAlignment="Top" Width="101"/>
+		  <TextBox x:Name="txtCellSizeY" Text = "{Binding Path=Raster.YCellSize, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="150,46,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="64"/>
+
+		  <Label x:Name="lblCellNumColumns" Content="Number Of Columns" HorizontalAlignment="Left" Margin="10,80,0,0" VerticalAlignment="Top"/>
+		  <TextBox x:Name="txtCellNumColumns" Text = "{Binding Path=Raster.NumColumns, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,106,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="64"/>
+
+		  <Label x:Name="lblCellNumRows" Content="Number Of Rows" HorizontalAlignment="Left" Margin="150,80,0,0" VerticalAlignment="Top"/>
+		  <TextBox x:Name="txtCellNumRows" Text = "{Binding Path=Raster.NumRows, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="150,106,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="64"/>
+
+		  <Label x:Name="lblCellTopLeftX" Content="Top Left Corner Coordinates" HorizontalAlignment="Left" Margin="10,140,0,0" VerticalAlignment="Top"/>
+		  <TextBox x:Name="txtCellTopLeftX" Text = "{Binding Path=Raster.TopLeftCoordinatesX, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,166,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="74"/>
+		  <TextBox x:Name="txtCellTopLeftY" Text = "{Binding Path=Raster.TopLeftCoordinatesY, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="150,166,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="74"/>
+
+		  <Label x:Name="lblCellRasterOuputDirectory" Content="Raster Output Directory" HorizontalAlignment="Left" Margin="10,200,0,0" VerticalAlignment="Top"/>
+		  <TextBox x:Name="txtCellRasterOutputDirectory" Text = "{Binding Path=Raster.RasterOutputDirectory, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,226,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="174"/>
+
+
+		  <StackPanel Grid.Row="1" Margin="10" HorizontalAlignment="Center">
+			  <Button Command="{Binding DisplayRaster}" Content="Display Raster" Style="{DynamicResource Esri_Button}" />
+		  </StackPanel>
+
+	</Grid>
 </UserControl>

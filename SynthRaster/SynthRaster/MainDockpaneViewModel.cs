@@ -51,10 +51,10 @@ namespace SynthRaster
 					_displayRaster = new RelayCommand(() =>
 					{
 						// save the info from the current user control
-						var output = $@"X Cell Size: {BasicRaster.XCellSize}, Y Cell Size: {BasicRaster.YCellSize}, Number of Columns: {BasicRaster.NumColumns}, Number Of Rows: {BasicRaster.NumRows}, Top Left X Coordinate: {BasicRaster.TopLeftCoordinatesX}, Top Left Y Coordinate: {BasicRaster.TopLeftCoordinatesY}, Raster Output Directory: {BasicRaster.RasterOutputDirectory}";
+						var output = $@"X Cell Size: {Raster.XCellSize}, Y Cell Size: {Raster.YCellSize}, Number of Columns: {Raster.NumColumns}, Number Of Rows: {Raster.NumRows}, Top Left X Coordinate: {Raster.TopLeftCoordinatesX}, Top Left Y Coordinate: {Raster.TopLeftCoordinatesY}, Raster Output Directory: {Raster.RasterOutputDirectory}";
 						ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(output);
 
-						BasicRaster.CreateRaster();
+						Raster.CreateRaster();
 					}, () => true);
 				}
 				return _displayRaster;
