@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Text;
 
 namespace RasterCore
 {
@@ -83,9 +84,72 @@ namespace RasterCore
 			}
 		}
 
-		public void WriteToFile(string PathToWriteTo)
+		public void WriteToFile(string PathToWriteTo, string fileName)
 		{
+			try
+			{
+				var filePath = PathToWriteTo + "\\" + fileName;
 
+				using (StreamWriter writer = new StreamWriter(filePath))
+				{
+					// Line #1: Number of columns
+					writer.WriteLine("ncols         " + numColumns);
+
+					// Line #2: Number of rows
+					writer.WriteLine("nrows         " + numRows);
+
+					// Line #3: X Lower Left Corner Coordinate
+					// TODO: Add method that changes top left coordinates to lower left coordinates
+					writer.WriteLine("xllcorner     " + topLeftCoordinatesX);
+
+					// Line #4: Y Lower Left Corner Coordinate
+					// TODO: Add method that changes top left coordinates to lower left coordinates
+					writer.WriteLine("yllcorner     " + topLeftCoordinatesY);
+
+					// Line #5: Cell Size
+					writer.WriteLine("cellsize      " + cellSize);
+
+					// Line #6: No Data Value
+					writer.WriteLine("ncols         " + NoDataValue);
+
+					// Remaining Lines: Output Array
+					for (int currentRow = 0; currentRow < numRows; currentRow++)
+					{
+						for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
+						{
+							if (this.rasterGrid[currentRow, currentColumn] == double.NaN)
+							{
+								writer.Write(NoDataValue);
+							}
+							else
+							{
+								writer.Write(rasterGrid[currentRow, currentColumn]);
+							}
+
+							writer.Write(" ");
+						}
+
+						writer.WriteLine("");
+					}
+
+					writer.Flush();
+				}
+			}
+			catch
+			{
+			}
+		}
+
+		public void AddSimpleGradient()
+		{
+			// Set the array cells to be their column value plus their row value
+			for (int currentRow = 0; currentRow < numRows; currentRow++)
+			{
+				for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
+				{
+					this.rasterGrid[currentRow, currentColumn] = currentColumn + currentRow;
+				}
+			}
 		}
 
 		public static RasterCore Zeroes(

@@ -15,6 +15,11 @@ namespace RasterConsole
 
 			//var coreRas = new RasterCore.RasterCore("C:\\Users\\lukes\\Downloads\\test.asc");
 			var coreRas = RasterCore.RasterCore.Zeroes(cellSize, numColumns, numRows, topLeftXCoordinate, topLeftYCoordinate);
+			// Add Gradient
+			coreRas.AddSimpleGradient();
+
+			// Output to ASC File
+			coreRas.WriteToFile("C:\\Users\\lukes\\OneDrive\\Documents\\Research Files\\SyntheticRaster\\SynthRaster\\Raster Files", "TestRun.asc");
 
 			Console.WriteLine("Hello World!");
 		}
