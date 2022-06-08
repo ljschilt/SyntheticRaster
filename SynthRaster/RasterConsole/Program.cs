@@ -1,20 +1,37 @@
 ﻿using RasterCore;
 using System;
+using System.Collections.Generic;
 
 namespace RasterConsole
 {
+	class Point : RCPoint
+	{
+		public double X { get; set; }
+		public double Y { get; set; }
+		public double Z { get; set; }
+
+		Point(double X, double Y, double Z = 0)
+		{
+			this.X = X;
+			this.Y = Y;
+			this.Z = Z;
+		}
+	}
+
 	class Program
 	{
+		//List <RCPoint> Points = {new Point() }
+
 		static void Main(string[] args)
 		{
-			double cellSize = 1;
-			int numColumns = 250;
-			int numRows = 250;
-			double topLeftXCoordinate = 1286273.9;
-			double topLeftYCoordinate = 703871.54;
+			double cellSize = 50;
+			int numColumns = 748;
+			int numRows = 598;
+			double leftXCoordinate = 1277550.01;
+			double bottomYCoordinate = 690050.02;
 
 			//var coreRas = new RasterCore.RasterCore("C:\\Users\\lukes\\Downloads\\test.asc");
-			var coreRas = RasterCore.RasterCore.Zeroes(cellSize, numColumns, numRows, topLeftXCoordinate, topLeftYCoordinate);
+			var coreRas = RasterCore.RasterCore.Zeroes(cellSize, numColumns, numRows, leftXCoordinate, bottomYCoordinate);
 			// Add Gradient
 			coreRas.AddSimpleGradient();
 

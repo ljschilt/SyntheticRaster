@@ -10,8 +10,8 @@ namespace RasterCore
 		private double cellSize { get; set; }
 		private int numColumns { get; set; }
 		private int numRows { get; set; }
-		private double topLeftCoordinatesX { get; set; }
-		private double topLeftCoordinatesY { get; set; }
+		private double leftXCoordinate { get; set; }
+		private double bottomYCoordinate { get; set; }
 		private string NoDataValue { get; set; }
 		private double[,] rasterGrid { get; set; }
 
@@ -33,12 +33,10 @@ namespace RasterCore
 				numRows = int.Parse(sr.ReadLine().Split(" ")[1]);
 
 				// Item #3: X Lower Left Corner 
-				double lowerleftXCoordinate = double.Parse(sr.ReadLine().Split(" ")[1]);
-				topLeftCoordinatesX = lowerleftXCoordinate;
+				leftXCoordinate = double.Parse(sr.ReadLine().Split(" ")[1]);
 
 				// Item #4: Y Lower Left Corner
-				double lowerleftYCoordinate = double.Parse(sr.ReadLine().Split(" ")[1]);
-				topLeftCoordinatesY = lowerleftYCoordinate;
+				bottomYCoordinate = double.Parse(sr.ReadLine().Split(" ")[1]);
 
 				// Item #5: Cell Size
 				cellSize = double.Parse(sr.ReadLine().Split(" ")[1]);
@@ -99,12 +97,10 @@ namespace RasterCore
 					writer.WriteLine("nrows         " + numRows);
 
 					// Line #3: X Lower Left Corner Coordinate
-					// TODO: Add method that changes top left coordinates to lower left coordinates
-					writer.WriteLine("xllcorner     " + topLeftCoordinatesX);
+					writer.WriteLine("xllcorner     " + leftXCoordinate);
 
 					// Line #4: Y Lower Left Corner Coordinate
-					// TODO: Add method that changes top left coordinates to lower left coordinates
-					writer.WriteLine("yllcorner     " + topLeftCoordinatesY);
+					writer.WriteLine("yllcorner     " + bottomYCoordinate);
 
 					// Line #5: Cell Size
 					writer.WriteLine("cellsize      " + cellSize);
@@ -156,16 +152,16 @@ namespace RasterCore
 			double cellSize, 
 			int numColumns, 
 			int numRows, 
-			double topLeftXCoordinate, 
-			double topLeftYCoordinate, 
+			double leftXCoordinate, 
+			double bottomYCoordinate, 
 			string noDataValue = "-9999")
 		{
 			var newRaster = new RasterCore();
 			newRaster.cellSize = cellSize;
 			newRaster.numColumns = numColumns;
 			newRaster.numRows = numRows;
-			newRaster.topLeftCoordinatesX = topLeftXCoordinate;
-			newRaster.topLeftCoordinatesY = topLeftYCoordinate;
+			newRaster.leftXCoordinate = leftXCoordinate;
+			newRaster.bottomYCoordinate = bottomYCoordinate;
 			newRaster.NoDataValue = noDataValue;
 			newRaster.rasterGrid = new double[numRows, numColumns];
 
