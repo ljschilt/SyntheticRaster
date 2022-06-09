@@ -1,12 +1,27 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using static RasterCore.StationAndOffset;
 
 namespace RasterCore
 {
+	public class Point : RCPoint
+	{
+		public double X { get; set; }
+		public double Y { get; set; }
+		public double Z { get; set; }
+
+		public Point(double X, double Y, double Z = 0)
+		{
+			this.X = X;
+			this.Y = Y;
+			this.Z = Z;
+		}
+	}
+
 	public class RasterCore
 	{
-		// Instance Variables
 		private double cellSize { get; set; }
 		private int numColumns { get; set; }
 		private int numRows { get; set; }
@@ -21,30 +36,20 @@ namespace RasterCore
 
 		public RasterCore(string PathToOpen)
 		{
-			// Open the file for reading
 			using(StreamReader sr = new StreamReader(PathToOpen))
 			{
-
-				// Read the tokens to acquire various data information.
-				// Item #1: Number of Columns
 				numColumns = int.Parse(sr.ReadLine().Split(" ")[1]);
 
-				// Item #2: Number of Rows
 				numRows = int.Parse(sr.ReadLine().Split(" ")[1]);
 
-				// Item #3: X Lower Left Corner 
 				leftXCoordinate = double.Parse(sr.ReadLine().Split(" ")[1]);
 
-				// Item #4: Y Lower Left Corner
 				bottomYCoordinate = double.Parse(sr.ReadLine().Split(" ")[1]);
 
-				// Item #5: Cell Size
 				cellSize = double.Parse(sr.ReadLine().Split(" ")[1]);
 
-				// Item #5: No Data Value
 				NoDataValue = sr.ReadLine().Split(" ")[1];
 
-				// Iteam #6: Raster Grid
 				rasterGrid = new double[numRows,numColumns];
 
 				string line;
@@ -90,25 +95,18 @@ namespace RasterCore
 
 				using (StreamWriter writer = new StreamWriter(filePath))
 				{
-					// Line #1: Number of columns
 					writer.WriteLine("ncols         " + numColumns);
 
-					// Line #2: Number of rows
 					writer.WriteLine("nrows         " + numRows);
 
-					// Line #3: X Lower Left Corner Coordinate
 					writer.WriteLine("xllcorner     " + leftXCoordinate);
 
-					// Line #4: Y Lower Left Corner Coordinate
 					writer.WriteLine("yllcorner     " + bottomYCoordinate);
 
-					// Line #5: Cell Size
 					writer.WriteLine("cellsize      " + cellSize);
 
-					// Line #6: No Data Value
 					writer.WriteLine("ncols         " + NoDataValue);
 
-					// Remaining Lines: Output Array
 					for (int currentRow = 0; currentRow < numRows; currentRow++)
 					{
 						for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
@@ -136,17 +134,19 @@ namespace RasterCore
 			}
 		}
 
-		public void AddSimpleGradient()
+		public void ComputeParametricSurface(List <RCPoint> RoadPoints)
 		{
-			// Set the array cells to be their column value plus their row value
 			for (int currentRow = 0; currentRow < numRows; currentRow++)
 			{
 				for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
 				{
-					this.rasterGrid[currentRow, currentColumn] = currentColumn + currentRow;
+					RCPoint rasterPoint = new Point(leftXCoordinate + ((currentColumn + 0.5) * cellSize), bottomYCoordinate + ((currentRow + 0.5) * cellSize));
+					var stationAndOffset = new StationAndOffset();
+					rasterGrid[currentRow, currentColumn] = (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset);
 				}
 			}
 		}
+
 
 		public static RasterCore Zeroes(
 			double cellSize, 
@@ -165,7 +165,6 @@ namespace RasterCore
 			newRaster.NoDataValue = noDataValue;
 			newRaster.rasterGrid = new double[numRows, numColumns];
 
-			// Set the array to be empty.
 			for (int currentRow = 0; currentRow < numRows; currentRow++)
 			{
 				for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
