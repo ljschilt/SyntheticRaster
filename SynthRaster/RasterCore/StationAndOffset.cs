@@ -13,21 +13,29 @@ namespace RasterCore
 
 			for (int lowestRoadPoint = 0; lowestRoadPoint < RoadPoints.Count - 1; lowestRoadPoint++)
 			{
+				double station = 0;
+				double offset = 0;
+
 				(double, double) roadEquation = CalculateLineEquation(RoadPoints[lowestRoadPoint], RoadPoints[lowestRoadPoint + 1]);
 
 				(double, double) perpendicularEquation = CalculatePerpendicularLineEquation(roadEquation.Item1, roadEquation.Item2, rasterPoint.X, rasterPoint.Y);
 
 				RCPoint intersectionPoint = CalculateIntersectionPoint(roadEquation.Item1, roadEquation.Item2, perpendicularEquation.Item1, perpendicularEquation.Item2);
 
-				double offset = CalculateDistance(intersectionPoint, rasterPoint);
-
-				double station = 0;
-				for (int segmentCounter = 0; segmentCounter < lowestRoadPoint; segmentCounter++)
+				if (CalculateDistance(intersectionPoint, RoadPoints[lowestRoadPoint]) > CalculateDistance(RoadPoints[lowestRoadPoint], RoadPoints[lowestRoadPoint + 1]))
 				{
-					station += CalculateDistance(RoadPoints[segmentCounter], RoadPoints[segmentCounter + 1]);
+					offset = CalculateDistance(RoadPoints[lowestRoadPoint + 1], rasterPoint);
+				}
+				else if (CalculateDistance(intersectionPoint, RoadPoints[lowestRoadPoint + 1]) > CalculateDistance(RoadPoints[lowestRoadPoint], RoadPoints[lowestRoadPoint + 1]))
+				{
+					offset = CalculateDistance(RoadPoints[lowestRoadPoint], rasterPoint);
+				}
+				else
+				{
+					offset = CalculateDistance(intersectionPoint, rasterPoint);
 				}
 
-				station += CalculateDistance(RoadPoints[lowestRoadPoint], intersectionPoint);
+				station = CalculateStation(intersectionPoint, lowestRoadPoint, RoadPoints);
 
 				if (lowestRoadPoint == 0)
 				{
@@ -89,6 +97,20 @@ namespace RasterCore
 		public double CalculateDistance(RCPoint point1, RCPoint point2)
 		{
 			return Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
+		}
+
+		public double CalculateStation(RCPoint Point, int RoadPoint, List<RCPoint> RoadPoints)
+		{
+			double station = 0;
+
+			for (int segmentCounter = 0; segmentCounter < RoadPoint; segmentCounter++)
+			{
+				station += CalculateDistance(RoadPoints[segmentCounter], RoadPoints[segmentCounter + 1]);
+			}
+
+			station += CalculateDistance(RoadPoints[RoadPoint], Point);
+
+			return station;
 		}
 	}
 }

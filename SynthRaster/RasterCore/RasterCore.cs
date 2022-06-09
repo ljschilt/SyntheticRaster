@@ -136,13 +136,22 @@ namespace RasterCore
 
 		public void ComputeParametricSurface(List <RCPoint> RoadPoints)
 		{
+			var stationAndOffset = new StationAndOffset();
+			int RoadWidth = 50;
 			for (int currentRow = 0; currentRow < numRows; currentRow++)
 			{
 				for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
 				{
 					RCPoint rasterPoint = new Point(leftXCoordinate + ((currentColumn + 0.5) * cellSize), bottomYCoordinate + ((currentRow + 0.5) * cellSize));
-					var stationAndOffset = new StationAndOffset();
-					rasterGrid[currentRow, currentColumn] = (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset);
+						
+					if (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset >= RoadWidth)
+					{
+						rasterGrid[currentRow, currentColumn] = (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset);
+					}
+					else
+					{
+						rasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
+					}
 				}
 			}
 		}
