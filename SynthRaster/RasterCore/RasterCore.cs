@@ -146,7 +146,7 @@ namespace RasterCore
 						
 					if (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset >= RoadWidth)
 					{
-						rasterGrid[currentRow, currentColumn] = (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset);
+						rasterGrid[currentRow, currentColumn] = (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset / 1);
 					}
 					else
 					{
