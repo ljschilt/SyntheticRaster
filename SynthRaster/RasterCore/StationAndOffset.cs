@@ -6,33 +6,37 @@ namespace RasterCore
 {
 	class StationAndOffset
 	{
-		public (double station, double offset) CalculateStationAndOffset(RCPoint rasterPoint, List<RCPoint> RoadPoints)
+		public double station { get; private set; }
+		public double offset { get; private set; }
+		public bool ProjectsOnSegment { get; private set; } = true;
+
+
+
+		public StationAndOffset(RCPoint rasterPoint, List<RCPoint> RoadPoints)
 		{
 			double minimumStation = 0;
 			double minimumOffset = 0;
 
 			for (int lowestRoadPoint = 0; lowestRoadPoint < RoadPoints.Count - 1; lowestRoadPoint++)
 			{
-				double station = 0;
-				double offset = 0;
+				double slope=0d, intercept=0d;
+				CalculateLineEquation(RoadPoints[lowestRoadPoint], RoadPoints[lowestRoadPoint + 1], ref slope, ref intercept);
 
-				(double, double) roadEquation = CalculateLineEquation(RoadPoints[lowestRoadPoint], RoadPoints[lowestRoadPoint + 1]);
+				double perpendicularSlope = 0d, perpendicularIntercept = 0d;
+				CalculatePerpendicularLineEquation(slope, intercept, rasterPoint.X, rasterPoint.Y, ref perpendicularSlope, ref perpendicularIntercept);
 
-				(double, double) perpendicularEquation = CalculatePerpendicularLineEquation(roadEquation.Item1, roadEquation.Item2, rasterPoint.X, rasterPoint.Y);
+				RCPoint intersectionPoint = CalculateIntersectionPoint(slope, intercept, perpendicularSlope, perpendicularIntercept);
+				station = CalculateStation(intersectionPoint, lowestRoadPoint, RoadPoints);
+				double beginStation = CalculateStation(RoadPoints[lowestRoadPoint], lowestRoadPoint, RoadPoints);
+				double endStation = CalculateStation(RoadPoints[lowestRoadPoint + 1], lowestRoadPoint, RoadPoints);
 
-				RCPoint intersectionPoint = CalculateIntersectionPoint(roadEquation.Item1, roadEquation.Item2, perpendicularEquation.Item1, perpendicularEquation.Item2);
-
-				if (CalculateDistance(intersectionPoint, RoadPoints[lowestRoadPoint]) > CalculateDistance(RoadPoints[lowestRoadPoint], RoadPoints[lowestRoadPoint + 1]))
+				if (station > beginStation && station < endStation)
 				{
-					offset = CalculateDistance(RoadPoints[lowestRoadPoint + 1], rasterPoint);
-				}
-				else if (CalculateDistance(intersectionPoint, RoadPoints[lowestRoadPoint + 1]) > CalculateDistance(RoadPoints[lowestRoadPoint], RoadPoints[lowestRoadPoint + 1]))
-				{
-					offset = CalculateDistance(RoadPoints[lowestRoadPoint], rasterPoint);
+					ProjectsOnSegment = true;
 				}
 				else
 				{
-					offset = CalculateDistance(intersectionPoint, rasterPoint);
+					ProjectsOnSegment = false;
 				}
 
 				station = CalculateStation(intersectionPoint, lowestRoadPoint, RoadPoints);
@@ -55,48 +59,41 @@ namespace RasterCore
 					}
 				}
 			}
-
-			return (minimumStation, minimumOffset);
 		}
 
-		public (double slope, double yIntercept) CalculateLineEquation(RCPoint lowestRoadPoint, RCPoint highestRoadPoint)
+		public void CalculateLineEquation(RCPoint lowestRoadPoint, RCPoint highestRoadPoint,
+			ref double slope, ref double intercept)
 		{
-			// Step 1: Calculate the slope m using y = mx + b
-			double slope = (highestRoadPoint.Y - lowestRoadPoint.Y) / (highestRoadPoint.X - lowestRoadPoint.X);
-
-			// Step 2: Use the slope to calculate b, the y-intercept.
-			double intercept = lowestRoadPoint.Y - slope * lowestRoadPoint.X;
-
-			return (slope, intercept);
+			slope = (highestRoadPoint.Y - lowestRoadPoint.Y) / (highestRoadPoint.X - lowestRoadPoint.X);
+			intercept = lowestRoadPoint.Y - slope * lowestRoadPoint.X;
 		}
 
-		public (double slope, double yIntercept) CalculatePerpendicularLineEquation(double slope, double intercept, double x, double y)
+		public void CalculatePerpendicularLineEquation(double slope, double intercept, double x, double y, ref double perpendicularSlope, ref double perpendicularIntercept)
 		{
-			// Step 1: Take the negative reciprocal of the slope.
-			double perpendicularSlope = -1.0 / slope;
-
-			// Step 2: Find the intercept using the X and Y values of the raster point.
-			double perpendicularIntercept = y - perpendicularSlope * x;
-
-			return (perpendicularSlope, perpendicularIntercept);
+			perpendicularSlope = -1.0 / slope;
+			perpendicularIntercept = y - perpendicularSlope * x;
 		}
 
 		public RCPoint CalculateIntersectionPoint(double slope1, double intercept1, double slope2, double intercept2)
 		{
-			// Step 1: Calculate the X value.
 			double X = -1.0 * (intercept1 - intercept2) / (slope1 - slope2);
-
-			// Step 2: Calculate the Y value.
 			double Y = (slope1 * X) + intercept1;
 
 			RCPoint intersectionPoint = new Point(X, Y);
-
 			return intersectionPoint;
 		}
 
 		public double CalculateDistance(RCPoint point1, RCPoint point2)
 		{
-			return Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
+			double distance = Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
+			if (((point2.Y - point1.Y) / (point2.X - point1.X)) > 0)
+			{
+				return distance;
+			}
+			else
+			{
+				return -1.0 * distance;
+			}
 		}
 
 		public double CalculateStation(RCPoint Point, int RoadPoint, List<RCPoint> RoadPoints)
@@ -111,6 +108,16 @@ namespace RasterCore
 			station += CalculateDistance(RoadPoints[RoadPoint], Point);
 
 			return station;
+		}
+
+		public static IReadOnlyList<StationAndOffset> CreateSOList(RCPoint rasterPoint, List<RCPoint> RoadPoints) {
+			var soList = new List<StationAndOffset>();
+			for (int i = 0; i < RoadPoints.Count - 1; i++) {
+				var segment = new List<RCPoint> {RoadPoints[i], RoadPoints[i + 1] };
+				var aSO = new StationAndOffset(rasterPoint, segment);
+				soList.Add(aSO);
+			}
+			return soList;
 		}
 	}
 }

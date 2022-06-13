@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace RasterCore
 {
@@ -103,7 +104,7 @@ namespace RasterCore
 
 					writer.WriteLine("cellsize      " + cellSize);
 
-					writer.WriteLine("ncols         " + NoDataValue);
+					writer.WriteLine("NODATA_value  " + NoDataValue);
 
 					for (int currentRow = 0; currentRow < numRows; currentRow++)
 					{
@@ -134,17 +135,23 @@ namespace RasterCore
 
 		public void ComputeParametricSurface(List <RCPoint> RoadPoints)
 		{
-			var stationAndOffset = new StationAndOffset();
 			int RoadWidth = 50;
 			for (int currentRow = 0; currentRow < numRows; currentRow++)
 			{
 				for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
 				{
 					RCPoint rasterPoint = new Point(leftXCoordinate + ((currentColumn + 0.5) * cellSize), bottomYCoordinate + ((currentRow + 0.5) * cellSize));
-						
-					if (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset >= RoadWidth)
+					IReadOnlyList<StationAndOffset> allSOs = StationAndOffset.CreateSOList(rasterPoint, RoadPoints);
+
+					// Iterate for every entry in this list
+					// Do not project the offsets that do not project on the segment. Project the smallest offset value.
+					var stationAndOffset = allSOs.Where(so => so.ProjectsOnSegment == true)
+						.OrderBy(so => Math.Abs(so.offset))
+						.FirstOrDefault();
+
+					if (stationAndOffset.offset >= RoadWidth)
 					{
-						rasterGrid[currentRow, currentColumn] = (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset / 10);
+						rasterGrid[currentRow, currentColumn] = (stationAndOffset.offset / 10);
 					}
 					else
 					{
