@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using static RasterCore.StationAndOffset;
 
 namespace RasterCore
 {
@@ -146,7 +144,7 @@ namespace RasterCore
 						
 					if (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset >= RoadWidth)
 					{
-						rasterGrid[currentRow, currentColumn] = (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset / 1);
+						rasterGrid[currentRow, currentColumn] = (stationAndOffset.CalculateStationAndOffset(rasterPoint, RoadPoints).offset / 10);
 					}
 					else
 					{

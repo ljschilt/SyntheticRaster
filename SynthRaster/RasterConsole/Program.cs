@@ -16,12 +16,10 @@ namespace RasterConsole
 			double leftXCoordinate = 1277550.01;
 			double bottomYCoordinate = 690050.02;
 
-			var coreRas = RasterCore.RasterCore.Zeroes(cellSize, numColumns, numRows, leftXCoordinate, bottomYCoordinate);
+			RasterCore.RasterCore coreRas = RasterCore.RasterCore.Zeroes(cellSize, numColumns, numRows, leftXCoordinate, bottomYCoordinate);
 			coreRas.ComputeParametricSurface(Points);
 
 			coreRas.WriteToFile("C:\\Users\\lukes\\OneDrive\\Documents\\Research Files\\SyntheticRaster\\SynthRaster\\Raster Files", "TestRun.asc");
-
-			Console.WriteLine("Hello World!");
 		}
 	}
 }

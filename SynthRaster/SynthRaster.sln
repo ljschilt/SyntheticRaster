@@ -4,10 +4,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.32510.428
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SynthRaster", "SynthRaster\SynthRaster.csproj", "{26D78621-502D-419B-B8FD-A9E467EC302D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1BF90317-1DF5-477E-8D0A-7CA33889C2D7} = {1BF90317-1DF5-477E-8D0A-7CA33889C2D7}
+	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RasterCore", "RasterCore\RasterCore.csproj", "{1BF90317-1DF5-477E-8D0A-7CA33889C2D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RasterCore", "RasterCore\RasterCore.csproj", "{1BF90317-1DF5-477E-8D0A-7CA33889C2D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RasterConsole", "RasterConsole\RasterConsole.csproj", "{667FCE4E-04C4-49AF-A7DC-F49914F8BB29}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RasterConsole", "RasterConsole\RasterConsole.csproj", "{667FCE4E-04C4-49AF-A7DC-F49914F8BB29}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
