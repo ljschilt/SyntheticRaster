@@ -35,15 +35,15 @@ namespace RasterCore
 
         public RasterCore(string PathToOpen)
         {
-            using(StreamReader sr = new StreamReader(PathToOpen))
+            using (StreamReader sr = new StreamReader(PathToOpen))
             {
-                numColumns = int.Parse(sr.ReadLine().Split(" ")[1]);
-                numRows = int.Parse(sr.ReadLine().Split(" ")[1]);
-                leftXCoordinate = double.Parse(sr.ReadLine().Split(" ")[1]);
-                bottomYCoordinate = double.Parse(sr.ReadLine().Split(" ")[1]);
-                cellSize = double.Parse(sr.ReadLine().Split(" ")[1]);
-                NoDataValue = sr.ReadLine().Split(" ")[1];
-                rasterGrid = new double[numRows,numColumns];
+                numColumns = int.Parse(sr.ReadLine().Split(' ')[1]);
+                numRows = int.Parse(sr.ReadLine().Split(' ')[1]);
+                leftXCoordinate = double.Parse(sr.ReadLine().Split(' ')[1]);
+                bottomYCoordinate = double.Parse(sr.ReadLine().Split(' ')[1]);
+                cellSize = double.Parse(sr.ReadLine().Split(' ')[1]);
+                NoDataValue = sr.ReadLine().Split(' ')[1];
+                rasterGrid = new double[numRows, numColumns];
                 string line;
                 int rowCounter = -1;
 
@@ -51,7 +51,7 @@ namespace RasterCore
                 {
                     line = sr.ReadLine();
                     if (line == null) break;
-                    var lineList = line.Split(" ");
+                    var lineList = line.Split(' ');
                     rowCounter++;
                     int columnCounter = -1;
 
@@ -156,7 +156,7 @@ namespace RasterCore
                 for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
                 {
                     var val = rasterGrid[currentRow, currentColumn];
-                    if(val != Int32.Parse(NoDataValue))
+                    if (val != Int32.Parse(NoDataValue))
                     {
                         val *= 498;
                         val /= maxValue;
@@ -166,13 +166,13 @@ namespace RasterCore
             }
         }
 
-public static RasterCore Zeroes(
-            double cellSize, 
-            int numColumns, 
-            int numRows, 
-            double leftXCoordinate, 
-            double bottomYCoordinate, 
-            string noDataValue = "-9999")
+        public static RasterCore Zeroes(
+                    double cellSize,
+                    int numColumns,
+                    int numRows,
+                    double leftXCoordinate,
+                    double bottomYCoordinate,
+                    string noDataValue = "-9999")
         {
             var newRaster = new RasterCore();
             newRaster.cellSize = cellSize;
@@ -187,7 +187,7 @@ public static RasterCore Zeroes(
             {
                 for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
                 {
-                    newRaster.rasterGrid[currentRow,currentColumn] = 0;
+                    newRaster.rasterGrid[currentRow, currentColumn] = 0;
                 }
             }
 

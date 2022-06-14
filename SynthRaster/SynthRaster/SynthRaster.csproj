@@ -137,6 +137,12 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\RasterCore\RasterCore.csproj">
+      <Project>{44063156-4905-4631-9ca3-537f8149f88d}</Project>
+      <Name>RasterCore</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!--
   PackageAction can be:

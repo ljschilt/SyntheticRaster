@@ -63,9 +63,11 @@ namespace RasterCore
             return station;
         }
 
-        public static IReadOnlyList<StationAndOffset> CreateSOList(RCPoint rasterPoint, List<RCPoint> RoadPoints) {
+        public static IReadOnlyList<StationAndOffset> CreateSOList(RCPoint rasterPoint, List<RCPoint> RoadPoints)
+        {
             var soList = new List<StationAndOffset>();
-            for (int i = 0; i < RoadPoints.Count - 1; i++) {
+            for (int i = 0; i < RoadPoints.Count - 1; i++)
+            {
                 var aSO = new StationAndOffset(rasterPoint, i, RoadPoints);
 
                 double testOffset = aSO.offset;

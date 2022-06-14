@@ -64,7 +64,7 @@ namespace RasterCore
 
         public double CrossProductMagnitude(Vector vector1, Vector vector2)
         {
-            return Math.Abs((vector1.X * vector2.Y) - (vector2.X * vector1.Y)); 
+            return Math.Abs((vector1.X * vector2.Y) - (vector2.X * vector1.Y));
         }
 
         public double DotProduct(Vector vector1, Vector vector2)
@@ -80,7 +80,7 @@ namespace RasterCore
             }
             else
             {
-                Vector vector2 = (Vector) obj;
+                Vector vector2 = (Vector)obj;
                 return (X == vector2.X) && (Y == vector2.Y);
             }
         }
