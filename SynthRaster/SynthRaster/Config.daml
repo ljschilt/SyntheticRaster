@@ -30,7 +30,7 @@
       <controls>
         <button id="SynthRaster_RasterDockpane_ShowButton" caption="Create Raster" className="RasterDockpane_ShowButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
           <tooltip heading="Create Raster">
-						Create a rendition of a raster program in ArcGIS.<disabledText /></tooltip>
+                        Create a rendition of a raster program in ArcGIS.<disabledText /></tooltip>
         </button>
       </controls>
       <dockPanes>
