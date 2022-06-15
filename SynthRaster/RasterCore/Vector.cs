@@ -84,5 +84,7 @@ namespace RasterCore
                 return (X == vector2.X) && (Y == vector2.Y);
             }
         }
+
+        public override int GetHashCode() { return (int) ((X / 1000) + (Y / 1000)); }
     }
 }

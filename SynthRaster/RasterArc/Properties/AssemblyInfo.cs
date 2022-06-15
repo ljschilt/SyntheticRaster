@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SynthRaster")]
+[assembly: AssemblyTitle("RasterArc")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Acme")]
-[assembly: AssemblyProduct("SynthRaster")]
+[assembly: AssemblyProduct("RasterArc")]
 [assembly: AssemblyCopyright("Copyright © Acme 2022")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("59f8a23b-deda-4674-ae95-fc1edf7b2707")]
+[assembly: Guid("e3c7be93-eb5f-4320-9a36-2bb77733222b")]
 
 // Version information for an assembly consists of the following four values:
 //

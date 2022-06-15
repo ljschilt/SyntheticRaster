@@ -1,6 +1,6 @@
 ﻿using RasterCore;
-using System;
 using System.Collections.Generic;
+
 
 namespace RasterConsole
 {

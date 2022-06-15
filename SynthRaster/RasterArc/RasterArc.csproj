@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{59F8A23B-DEDA-4674-AE95-FC1EDF7B2707}</ProjectGuid>
+    <ProjectGuid>{E3C7BE93-EB5F-4320-9A36-2BB77733222B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SynthRaster</RootNamespace>
-    <AssemblyName>SynthRaster</AssemblyName>
+    <RootNamespace>RasterArc</RootNamespace>
+    <AssemblyName>RasterArc</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -123,16 +123,16 @@
     <AddInContent Include="DarkImages\AddInDesktop32.png" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ArcDockpane.xaml.cs">
+      <DependentUpon>ArcDockpane.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ArcDockpaneViewModel.cs" />
     <Compile Include="Models\BasicRaster.cs" />
     <Compile Include="Module1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RasterDockpane.xaml.cs">
-      <DependentUpon>RasterDockpane.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="RasterDockpaneViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Page Include="RasterDockpane.xaml">
+    <Page Include="ArcDockpane.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

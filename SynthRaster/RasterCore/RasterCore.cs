@@ -83,7 +83,7 @@ namespace RasterCore
         {
             try
             {
-                var filePath = PathToWriteTo + "\\" + fileName;
+                var filePath = PathToWriteTo + @"\" + fileName;
 
                 using (StreamWriter writer = new StreamWriter(filePath))
                 {
@@ -122,6 +122,13 @@ namespace RasterCore
         {
             int RoadWidth = 50;
             double maxValue = 0.0;
+            double a = 100;
+            double aSquared = a * a;
+            double maxProb = 0.15;
+            double baseProb = -0.0005;
+            double ProbDifference = maxProb - baseProb;
+            double widthToPeak = 300;
+
             for (int currentRow = 0; currentRow < numRows; currentRow++)
             {
                 for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
@@ -139,9 +146,24 @@ namespace RasterCore
                     }
                     else
                     {
-                        if (stationAndOffset.offset >= RoadWidth)
+                        double x = stationAndOffset.offset;
+                        if (x >= RoadWidth)
                         {
-                            rasterGrid[currentRow, currentColumn] = stationAndOffset.offset;
+                            x = x - widthToPeak;
+                            double xSquared = x * x;
+
+                            double probabilityOfDevelopment = ( (aSquared * ProbDifference) / 
+                                ((xSquared + aSquared) * Math.Sqrt((xSquared / aSquared) + 1.0))) + baseProb;
+
+                            if (probabilityOfDevelopment >= 0)
+                            {
+                                rasterGrid[currentRow, currentColumn] = probabilityOfDevelopment;
+                            }
+                            else
+                            {
+                                rasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
+                            }
+
                             maxValue = rasterGrid[currentRow, currentColumn] > maxValue ? rasterGrid[currentRow, currentColumn] : maxValue;
                         }
                         else
@@ -151,19 +173,20 @@ namespace RasterCore
                     }
                 }
             }
-            for (int currentRow = 0; currentRow < numRows; currentRow++)
-            {
-                for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
-                {
-                    var val = rasterGrid[currentRow, currentColumn];
-                    if (val != Int32.Parse(NoDataValue))
-                    {
-                        val *= 498;
-                        val /= maxValue;
-                        rasterGrid[currentRow, currentColumn] = val;
-                    }
-                }
-            }
+
+            //for (int currentRow = 0; currentRow < numRows; currentRow++)
+            //{
+            //    for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
+            //    {
+            //        var val = rasterGrid[currentRow, currentColumn];
+            //        if (val != Int32.Parse(NoDataValue))
+            //        {
+            //            val *= 498;
+            //            val /= maxValue;
+            //            rasterGrid[currentRow, currentColumn] = val;
+            //        }
+            //    }
+            //}
         }
 
         public static RasterCore Zeroes(

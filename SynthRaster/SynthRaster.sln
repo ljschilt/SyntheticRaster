@@ -5,9 +5,9 @@ VisualStudioVersion = 16.0.32510.428
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RasterConsole", "RasterConsole\RasterConsole.csproj", "{667FCE4E-04C4-49AF-A7DC-F49914F8BB29}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SynthRaster", "SynthRaster\SynthRaster.csproj", "{59F8A23B-DEDA-4674-AE95-FC1EDF7B2707}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RasterCore", "RasterCore\RasterCore.csproj", "{44063156-4905-4631-9CA3-537F8149F88D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RasterArc", "RasterArc\RasterArc.csproj", "{E3C7BE93-EB5F-4320-9A36-2BB77733222B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,12 +25,6 @@ Global
 		{667FCE4E-04C4-49AF-A7DC-F49914F8BB29}.Release|Any CPU.Build.0 = Release|Any CPU
 		{667FCE4E-04C4-49AF-A7DC-F49914F8BB29}.Release|x64.ActiveCfg = Release|Any CPU
 		{667FCE4E-04C4-49AF-A7DC-F49914F8BB29}.Release|x64.Build.0 = Release|Any CPU
-		{59F8A23B-DEDA-4674-AE95-FC1EDF7B2707}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{59F8A23B-DEDA-4674-AE95-FC1EDF7B2707}.Debug|x64.ActiveCfg = Debug|x64
-		{59F8A23B-DEDA-4674-AE95-FC1EDF7B2707}.Debug|x64.Build.0 = Debug|x64
-		{59F8A23B-DEDA-4674-AE95-FC1EDF7B2707}.Release|Any CPU.ActiveCfg = Release|x64
-		{59F8A23B-DEDA-4674-AE95-FC1EDF7B2707}.Release|x64.ActiveCfg = Release|x64
-		{59F8A23B-DEDA-4674-AE95-FC1EDF7B2707}.Release|x64.Build.0 = Release|x64
 		{44063156-4905-4631-9CA3-537F8149F88D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{44063156-4905-4631-9CA3-537F8149F88D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{44063156-4905-4631-9CA3-537F8149F88D}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -39,6 +33,12 @@ Global
 		{44063156-4905-4631-9CA3-537F8149F88D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{44063156-4905-4631-9CA3-537F8149F88D}.Release|x64.ActiveCfg = Release|Any CPU
 		{44063156-4905-4631-9CA3-537F8149F88D}.Release|x64.Build.0 = Release|Any CPU
+		{E3C7BE93-EB5F-4320-9A36-2BB77733222B}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{E3C7BE93-EB5F-4320-9A36-2BB77733222B}.Debug|x64.ActiveCfg = Debug|x64
+		{E3C7BE93-EB5F-4320-9A36-2BB77733222B}.Debug|x64.Build.0 = Debug|x64
+		{E3C7BE93-EB5F-4320-9A36-2BB77733222B}.Release|Any CPU.ActiveCfg = Release|x64
+		{E3C7BE93-EB5F-4320-9A36-2BB77733222B}.Release|x64.ActiveCfg = Release|x64
+		{E3C7BE93-EB5F-4320-9A36-2BB77733222B}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

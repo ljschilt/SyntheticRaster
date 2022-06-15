@@ -1,23 +1,19 @@
 ﻿using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
-using SynthRaster.Models;
+using RasterArc.Models;
 using System.Windows.Input;
 
-namespace SynthRaster
+namespace RasterArc
 {
-    internal class RasterDockpaneViewModel : DockPane
+    internal class ArcDockpaneViewModel : DockPane
     {
-        private const string _dockPaneID = "SynthRaster_RasterDockpane";
+        private const string _dockPaneID = "RasterArc_ArcDockpane";
 
-        protected RasterDockpaneViewModel() {
+        protected ArcDockpaneViewModel() 
+        {
             Raster = new BasicRaster()
             {
-                CellSize = 1,
-                NumColumns = 2,
-                NumRows = 2,
-                LeftCoordinatesX = 0,
-                BottomCoordinatesY = 0,
-                RasterOutputDirectory = "C:\\Users\\lukes\\OneDrive\\Documents\\ResearchFiles\\SynthRaster"
+
             };
         }
 
@@ -32,14 +28,8 @@ namespace SynthRaster
                 {
                     _displayRaster = new RelayCommand(() =>
                     {
-                        // save the info from the current user control
-                        var output = $@"Cell Size: {Raster.CellSize}, Number of Columns: {Raster.NumColumns}, Number Of Rows: {Raster.NumRows}, Top Left X Coordinate: {Raster.LeftCoordinatesX}, Top Left Y Coordinate: {Raster.BottomCoordinatesY}, Raster Output Directory: {Raster.RasterOutputDirectory}";
-                        ArcGIS.Desktop.Framework.Dialogs.MessageBox.Show(output);
-
-                        // Run Program.cs with the given inputs.
                         BasicRaster raster = new BasicRaster();
-                        raster.CreateRaster(Raster.CellSize, Raster.NumColumns, Raster.NumRows, Raster.LeftCoordinatesX, Raster.BottomCoordinatesY);
-
+                        raster.CreateAndDisplayRaster(Raster.CellSize, Raster.NumColumns, Raster.NumRows, Raster.LeftCoordinatesX, Raster.BottomCoordinatesY, Raster.RasterFilename, Raster.RasterOutputDirectory);
                     }, () => true);
                 }
                 return _displayRaster;
@@ -61,7 +51,7 @@ namespace SynthRaster
         /// <summary>
         /// Text shown near the top of the DockPane.
         /// </summary>
-        private string _heading = "My DockPane";
+        private string _heading = "";
         public string Heading
         {
             get { return _heading; }
@@ -75,11 +65,11 @@ namespace SynthRaster
     /// <summary>
     /// Button implementation to show the DockPane.
     /// </summary>
-    internal class RasterDockpane_ShowButton : Button
+    internal class ArcDockpane_ShowButton : Button
     {
         protected override void OnClick()
         {
-            RasterDockpaneViewModel.Show();
+            ArcDockpaneViewModel.Show();
         }
     }
 }

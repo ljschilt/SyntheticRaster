@@ -18,7 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace SynthRaster
+namespace RasterArc
 {
     internal class Module1 : Module
     {
@@ -31,7 +31,7 @@ namespace SynthRaster
         {
             get
             {
-                return _this ?? (_this = (Module1)FrameworkApplication.FindModule("SynthRaster_Module"));
+                return _this ?? (_this = (Module1)FrameworkApplication.FindModule("RasterArc_Module"));
             }
         }
 

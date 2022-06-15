@@ -14,16 +14,16 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 
-namespace SynthRaster
+namespace RasterArc
 {
-	/// <summary>
-	/// Interaction logic for RasterDockpaneView.xaml
-	/// </summary>
-	public partial class RasterDockpaneView : UserControl
-	{
-		public RasterDockpaneView()
-		{
-			InitializeComponent();
-		}
-	}
+    /// <summary>
+    /// Interaction logic for ArcDockpaneView.xaml
+    /// </summary>
+    public partial class ArcDockpaneView : UserControl
+    {
+        public ArcDockpaneView()
+        {
+            InitializeComponent();
+        }
+    }
 }

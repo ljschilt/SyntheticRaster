@@ -1,0 +1,42 @@
+﻿<ArcGIS defaultAssembly="RasterArc.dll" defaultNamespace="RasterArc" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
+  <AddInInfo id="{e3c7be93-eb5f-4320-9a36-2bb77733222b}" version="1.0" desktopVersion="2.9.32739">
+    <Name>RasterArc</Name>
+    <Description>RasterArc description</Description>
+    <Image>Images\AddinDesktop32.png</Image>
+    <Author>lukes</Author>
+    <Company>Acme</Company>
+    <Date>6/14/2022 4:57:31 PM</Date>
+    <Subject>Framework</Subject>
+    <!-- Note subject can be one or more of these topics:
+                    Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
+  </AddInInfo>
+  <modules>
+    <insertModule id="RasterArc_Module" className="Module1" autoLoad="false" caption="Module1">
+      <!-- uncomment to have the control hosted on a separate tab-->
+      <tabs>
+        <!--<tab id="RasterArc_Tab1" caption="New Tab">
+          <group refID="RasterArc_Group1"/>
+        </tab>-->
+      </tabs>
+      <groups>
+        <!-- comment this out if you have no controls on the Addin tab to avoid
+              an empty group-->
+        <group id="RasterArc_Group1" caption="Create Synthetic Raster" appearsOnAddInTab="true">
+          <!-- host controls within groups -->
+          <button refID="RasterArc_ArcDockpane_ShowButton" size="large" />
+        </group>
+      </groups>
+      <controls>
+        <!-- add your controls here -->
+        <button id="RasterArc_ArcDockpane_ShowButton" caption="Create Synthetic Raster" className="ArcDockpane_ShowButton" loadOnClick="true" smallImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple16.png" largeImage="pack://application:,,,/ArcGIS.Desktop.Resources;component/Images/GenericButtonPurple32.png">
+          <tooltip heading="Create Synthetic Raster">Create a rendition of a synthetic raster program.<disabledText /></tooltip>
+        </button>
+      </controls>
+      <dockPanes>
+        <dockPane id="RasterArc_ArcDockpane" caption="Create Synthetic Raster" className="ArcDockpaneViewModel" dock="group" dockWith="esri_core_projectDockPane">
+          <content className="ArcDockpaneView" />
+        </dockPane>
+      </dockPanes>
+    </insertModule>
+  </modules>
+</ArcGIS>
