@@ -13,7 +13,6 @@ namespace RasterArc
         {
             Raster = new BasicRaster()
             {
-
             };
         }
 
@@ -29,7 +28,7 @@ namespace RasterArc
                     _displayRaster = new RelayCommand(() =>
                     {
                         BasicRaster raster = new BasicRaster();
-                        raster.CreateAndDisplayRaster(Raster.CellSize, Raster.NumColumns, Raster.NumRows, Raster.LeftCoordinatesX, Raster.BottomCoordinatesY, Raster.RasterFilename, Raster.RasterOutputDirectory);
+                        raster.CreateAndDisplayRaster(Raster.RasterFilename, Raster.RasterOutputDirectory);
                     }, () => true);
                 }
                 return _displayRaster;

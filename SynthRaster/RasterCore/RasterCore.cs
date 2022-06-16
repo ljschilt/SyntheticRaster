@@ -118,16 +118,11 @@ namespace RasterCore
             }
         }
 
-        public void ComputeParametricSurface(List<RCPoint> RoadPoints)
+        public void ComputeParametricSurface(List<RCPoint> RoadPoints, double a, double maxProb, double baseProb, double widthToPeak, double RoadWidth)
         {
-            int RoadWidth = 50;
             double maxValue = 0.0;
-            double a = 100;
             double aSquared = a * a;
-            double maxProb = 0.15;
-            double baseProb = -0.0005;
             double ProbDifference = maxProb - baseProb;
-            double widthToPeak = 300;
 
             for (int currentRow = 0; currentRow < numRows; currentRow++)
             {
