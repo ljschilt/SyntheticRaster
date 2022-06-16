@@ -64,7 +64,9 @@ namespace RasterArc.Models
         public async void CreateAndDisplayRaster(string rasterName = "TestRun.asc", 
             string rasterOutputDirectory = @"C:\Users\lukes\OneDrive\Documents\Research Files\SyntheticRaster\SynthRaster\Raster Files")
         {
-            List<RCPoint> Points = new List<RCPoint> { new Point(1289502.41, 696521.78), new Point(1300086.67, 708023.33), new Point(1285440.00, 716776.67) };
+            GeometryReader geometryReader = new GeometryReader();
+            List<RCPoint> Points = geometryReader.CreateRoadPointList();
+            //List<RCPoint> Points = new List<RCPoint> { new Point(1289502.41, 696521.78), new Point(1300086.67, 708023.33), new Point(1285440.00, 716776.67) };
             RasterCore.RasterCore coreRas = RasterCore.RasterCore.Zeroes(_cellSize, _numColumns, _numRows, _leftXCoordinate, _bottomYCoordinate);
             coreRas.ComputeParametricSurface(Points, _a, _maxProb, _baseProb, _widthToPeak, _roadWidth);
             coreRas.WriteToFile(rasterOutputDirectory, rasterName);
