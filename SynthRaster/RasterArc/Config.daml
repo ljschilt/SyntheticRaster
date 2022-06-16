@@ -24,6 +24,7 @@
         <group id="RasterArc_Group1" caption="Create Synthetic Raster" appearsOnAddInTab="true">
           <!-- host controls within groups -->
           <button refID="RasterArc_ArcDockpane_ShowButton" size="large" />
+          <comboBox refID="RasterArc_LayerSelectionBox" />
         </group>
       </groups>
       <controls>

@@ -128,6 +128,7 @@
     </Compile>
     <Compile Include="ArcDockpaneViewModel.cs" />
     <Compile Include="Models\BasicRaster.cs" />
+    <Compile Include="Models\GeometryReader.cs" />
     <Compile Include="Module1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

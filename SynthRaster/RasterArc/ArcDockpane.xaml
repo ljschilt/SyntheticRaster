@@ -41,7 +41,7 @@
 		<Label x:Name="lblBottomLeftX" Content="Bottom Left Corner Coordinates" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top"/>
 		<TextBox x:Name="txtLeftX" Text = "{Binding Path=Raster.LeftCoordinatesX, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
 		<TextBox x:Name="txtBottomY" Text = "{Binding Path=Raster.BottomCoordinatesY, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="150,96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
-
+		
 		<Label x:Name="lblMaxProb" Content="Max Prob." HorizontalAlignment="Left" Margin="10,120,0,0" VerticalAlignment="Top" Width="119"/>
 		<TextBox x:Name="txtMaxProb" Text = "{Binding Path=Raster.MaxProb, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="64"/>
 		<Label x:Name="lblBaseProb" Content="Base Prob." HorizontalAlignment="Left" Margin="100,120,0,0" VerticalAlignment="Top"/>
@@ -49,15 +49,21 @@
 		<Label x:Name="lblWidthToPeak" Content="Peak Width" HorizontalAlignment="Left" Margin="190,120,0,0" VerticalAlignment="Top"/>
 		<TextBox x:Name="txtWidthToPeak" Text = "{Binding Path=Raster.WidthToPeak, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="190,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="64"/>
 
-		<Label x:Name="lblRasterFilename" Content="Filename" HorizontalAlignment="Left" Margin="10,220,0,0" VerticalAlignment="Top"/>
-		<TextBox x:Name="txtRasterFilename" Text = "{Binding Path=Raster.RasterFilename, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,246,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
-		<Label x:Name="lblRasterOuputDirectory" Content="Output Directory" HorizontalAlignment="Left" Margin="150,220,0,0" VerticalAlignment="Top"/>
-		<TextBox x:Name="txtRasterOutputDirectory" Text = "{Binding Path=Raster.RasterOutputDirectory, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="150,246,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
+		<!-- Combo Box for layer input -->
+		<StackPanel Grid.Row="0" Orientation="Vertical">
+			<Label x:Name="lblComboBox" Content="Select Layer:" HorizontalAlignment="Left" Margin="10,220,0,0" VerticalAlignment="Top" Width="119"/>
+			<ComboBox ItemsSource="{Binding Layers}"  SelectedItem="{Binding SelectedLayer, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,0,0,0" VerticalAlignment="Top" Width="244"/>
+		</StackPanel>
 
 		<Label x:Name="lblInflectionWidth" Content="Inflection Width" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top"/>
 		<TextBox x:Name="txtInflectionWidth" Text = "{Binding Path=Raster.A, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,196,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
 		<Label x:Name="lblRoadWidth" Content="Road Width" HorizontalAlignment="Left" Margin="150,170,0,0" VerticalAlignment="Top"/>
 		<TextBox x:Name="txtRoadWidth" Text = "{Binding Path=Raster.RoadWidth, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="150,196,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
+
+		<Label x:Name="lblRasterFilename" Content="Filename" HorizontalAlignment="Left" Margin="10,270,0,0" VerticalAlignment="Top"/>
+		<TextBox x:Name="txtRasterFilename" Text = "{Binding Path=Raster.RasterFilename, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,296,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
+		<Label x:Name="lblRasterOuputDirectory" Content="Output Directory" HorizontalAlignment="Left" Margin="150,270,0,0" VerticalAlignment="Top"/>
+		<TextBox x:Name="txtRasterOutputDirectory" Text = "{Binding Path=Raster.RasterOutputDirectory, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="150,296,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
 
 		<StackPanel Grid.Row="1" Margin="10" HorizontalAlignment="Center">
 			<Button Command="{Binding DisplayRaster}" Content="Display Raster" Style="{DynamicResource Esri_Button}" />

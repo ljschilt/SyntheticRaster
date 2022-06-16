@@ -6,8 +6,8 @@ namespace RasterCore
 {
     class StationAndOffset : Vector
     {
-        public double station { get; private set; }
-        public double offset { get; private set; }
+        public double Station { get; private set; }
+        public double Offset { get; private set; }
         public bool ProjectsOnSegment { get; private set; } = true;
 
         public StationAndOffset(RCPoint rasterPoint, int firstSegmentPoint, List<RCPoint> RoadPoints)
@@ -15,35 +15,33 @@ namespace RasterCore
             // Step 1: Calculate the vector and unit vector of the road segment's points.
             Vector roadVector = new Vector(RoadPoints[firstSegmentPoint], RoadPoints[firstSegmentPoint + 1]);
             double roadSegmentLength = Magnitude(roadVector);
-            _ = new Vector();
-            Vector roadUnitVector = UnitVector(roadVector);
 
             Vector rasterVector = new Vector(RoadPoints[firstSegmentPoint], rasterPoint);
             double rasterVectorLength = Magnitude(rasterVector);
 
             // Step 2: Calculate the angle in between the road vector and raster vector.
-            double angle = Math.Acos(DotProduct(rasterVector, roadVector) / (Magnitude(rasterVector) * Magnitude(roadVector)));
+            double angle = Math.Acos(DotProduct(rasterVector, roadVector) / (rasterVectorLength * roadSegmentLength));
 
             // Step 3: Calculate the offset and station.
-            offset = 0;
-            station = CalculateStation(firstSegmentPoint, RoadPoints);
+            Offset = 0;
+            Station = CalculateStation(firstSegmentPoint, RoadPoints);
             if (angle <= (Math.PI / 2))
             {
-                offset = rasterVectorLength * Math.Sin(angle);
-                station += rasterVectorLength * Math.Cos(angle);
+                Offset = rasterVectorLength * Math.Sin(angle);
+                Station += rasterVectorLength * Math.Cos(angle);
             }
             else
             {
                 angle = Math.PI - angle;
-                offset = rasterVectorLength * Math.Sin(angle);
-                station -= rasterVectorLength * Math.Cos(angle);
+                Offset = rasterVectorLength * Math.Sin(angle);
+                Station -= rasterVectorLength * Math.Cos(angle);
             }
 
             // Step 4: Determine if the point is projected off of the line segment. Update the boolean ProjectsOnSegment
             double beginStation = CalculateStation(firstSegmentPoint, RoadPoints);
             double endStation = CalculateStation(firstSegmentPoint + 1, RoadPoints);
 
-            ProjectsOnSegment = station >= beginStation && station <= endStation;
+            ProjectsOnSegment = Station >= beginStation && Station <= endStation;
         }
 
         public double CalculateDistance(RCPoint point1, RCPoint point2)
@@ -69,10 +67,6 @@ namespace RasterCore
             for (int i = 0; i < RoadPoints.Count - 1; i++)
             {
                 var aSO = new StationAndOffset(rasterPoint, i, RoadPoints);
-
-                double testOffset = aSO.offset;
-                double testStation = aSO.station;
-
                 soList.Add(aSO);
             }
             return soList;

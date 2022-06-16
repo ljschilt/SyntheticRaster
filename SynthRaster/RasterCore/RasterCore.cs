@@ -21,13 +21,13 @@ namespace RasterCore
 
     public class RasterCore
     {
-        private double cellSize { get; set; }
-        private int numColumns { get; set; }
-        private int numRows { get; set; }
-        private double leftXCoordinate { get; set; }
-        private double bottomYCoordinate { get; set; }
+        private double CellSize { get; set; }
+        private int NumColumns { get; set; }
+        private int NumRows { get; set; }
+        private double LeftXCoordinate { get; set; }
+        private double BottomYCoordinate { get; set; }
         private string NoDataValue { get; set; }
-        private double[,] rasterGrid { get; set; }
+        private double[,] RasterGrid { get; set; }
 
         protected RasterCore()
         {
@@ -37,13 +37,13 @@ namespace RasterCore
         {
             using (StreamReader sr = new StreamReader(PathToOpen))
             {
-                numColumns = int.Parse(sr.ReadLine().Split(' ')[1]);
-                numRows = int.Parse(sr.ReadLine().Split(' ')[1]);
-                leftXCoordinate = double.Parse(sr.ReadLine().Split(' ')[1]);
-                bottomYCoordinate = double.Parse(sr.ReadLine().Split(' ')[1]);
-                cellSize = double.Parse(sr.ReadLine().Split(' ')[1]);
+                NumColumns = int.Parse(sr.ReadLine().Split(' ')[1]);
+                NumRows = int.Parse(sr.ReadLine().Split(' ')[1]);
+                LeftXCoordinate = double.Parse(sr.ReadLine().Split(' ')[1]);
+                BottomYCoordinate = double.Parse(sr.ReadLine().Split(' ')[1]);
+                CellSize = double.Parse(sr.ReadLine().Split(' ')[1]);
                 NoDataValue = sr.ReadLine().Split(' ')[1];
-                rasterGrid = new double[numRows, numColumns];
+                RasterGrid = new double[NumRows, NumColumns];
                 string line;
                 int rowCounter = -1;
 
@@ -60,13 +60,13 @@ namespace RasterCore
                         columnCounter++;
                         if (entry == this.NoDataValue)
                         {
-                            rasterGrid[rowCounter, columnCounter] = double.NaN;
+                            RasterGrid[rowCounter, columnCounter] = double.NaN;
                         }
                         else
                         {
                             try
                             {
-                                rasterGrid[rowCounter, columnCounter] = double.Parse(entry);
+                                RasterGrid[rowCounter, columnCounter] = double.Parse(entry);
                             }
                             catch
                             {
@@ -87,24 +87,24 @@ namespace RasterCore
 
                 using (StreamWriter writer = new StreamWriter(filePath))
                 {
-                    writer.WriteLine("ncols         " + numColumns);
-                    writer.WriteLine("nrows         " + numRows);
-                    writer.WriteLine("xllcorner     " + leftXCoordinate);
-                    writer.WriteLine("yllcorner     " + bottomYCoordinate);
-                    writer.WriteLine("cellsize      " + cellSize);
+                    writer.WriteLine("ncols         " + NumColumns);
+                    writer.WriteLine("nrows         " + NumRows);
+                    writer.WriteLine("xllcorner     " + LeftXCoordinate);
+                    writer.WriteLine("yllcorner     " + BottomYCoordinate);
+                    writer.WriteLine("cellsize      " + CellSize);
                     writer.WriteLine("NODATA_value  " + NoDataValue);
 
-                    for (int currentRow = 0; currentRow < numRows; currentRow++)
+                    for (int currentRow = 0; currentRow < NumRows; currentRow++)
                     {
-                        for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
+                        for (int currentColumn = 0; currentColumn < NumColumns; currentColumn++)
                         {
-                            if (this.rasterGrid[currentRow, currentColumn] == double.NaN)
+                            if (this.RasterGrid[currentRow, currentColumn] == double.NaN)
                             {
                                 writer.Write(NoDataValue);
                             }
                             else
                             {
-                                writer.Write(rasterGrid[currentRow, currentColumn]);
+                                writer.Write(RasterGrid[currentRow, currentColumn]);
                             }
                             writer.Write(" ");
                         }
@@ -124,27 +124,27 @@ namespace RasterCore
             double aSquared = a * a;
             double ProbDifference = maxProb - baseProb;
 
-            for (int currentRow = 0; currentRow < numRows; currentRow++)
+            for (int currentRow = 0; currentRow < NumRows; currentRow++)
             {
-                for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
+                for (int currentColumn = 0; currentColumn < NumColumns; currentColumn++)
                 {
-                    RCPoint rasterPoint = new Point(leftXCoordinate + ((currentColumn + 0.5) * cellSize), bottomYCoordinate + ((currentRow + 0.5) * cellSize));
+                    RCPoint rasterPoint = new Point(LeftXCoordinate + ((currentColumn + 0.5) * CellSize), BottomYCoordinate + ((currentRow + 0.5) * CellSize));
                     IReadOnlyList<StationAndOffset> allSOs = StationAndOffset.CreateSOList(rasterPoint, RoadPoints);
 
                     var stationAndOffset = allSOs.Where(so => so.ProjectsOnSegment == true)
-                        .OrderBy(so => Math.Abs(so.offset))
+                        .OrderBy(so => Math.Abs(so.Offset))
                         .FirstOrDefault();
 
                     if (stationAndOffset == null)
                     {
-                        rasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
+                        RasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
                     }
                     else
                     {
-                        double x = stationAndOffset.offset;
+                        double x = stationAndOffset.Offset;
                         if (x >= RoadWidth)
                         {
-                            x = x - widthToPeak;
+                            x -= widthToPeak;
                             double xSquared = x * x;
 
                             double probabilityOfDevelopment = ( (aSquared * ProbDifference) / 
@@ -152,18 +152,18 @@ namespace RasterCore
 
                             if (probabilityOfDevelopment >= 0)
                             {
-                                rasterGrid[currentRow, currentColumn] = probabilityOfDevelopment;
+                                RasterGrid[currentRow, currentColumn] = probabilityOfDevelopment;
                             }
                             else
                             {
-                                rasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
+                                RasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
                             }
 
-                            maxValue = rasterGrid[currentRow, currentColumn] > maxValue ? rasterGrid[currentRow, currentColumn] : maxValue;
+                            maxValue = RasterGrid[currentRow, currentColumn] > maxValue ? RasterGrid[currentRow, currentColumn] : maxValue;
                         }
                         else
                         {
-                            rasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
+                            RasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
                         }
                     }
                 }
@@ -192,20 +192,22 @@ namespace RasterCore
                     double bottomYCoordinate,
                     string noDataValue = "-9999")
         {
-            var newRaster = new RasterCore();
-            newRaster.cellSize = cellSize;
-            newRaster.numColumns = numColumns;
-            newRaster.numRows = numRows;
-            newRaster.leftXCoordinate = leftXCoordinate;
-            newRaster.bottomYCoordinate = bottomYCoordinate;
-            newRaster.NoDataValue = noDataValue;
-            newRaster.rasterGrid = new double[numRows, numColumns];
+            var newRaster = new RasterCore
+            {
+                CellSize = cellSize,
+                NumColumns = numColumns,
+                NumRows = numRows,
+                LeftXCoordinate = leftXCoordinate,
+                BottomYCoordinate = bottomYCoordinate,
+                NoDataValue = noDataValue,
+                RasterGrid = new double[numRows, numColumns]
+            };
 
             for (int currentRow = 0; currentRow < numRows; currentRow++)
             {
                 for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
                 {
-                    newRaster.rasterGrid[currentRow, currentColumn] = 0;
+                    newRaster.RasterGrid[currentRow, currentColumn] = 0;
                 }
             }
 
