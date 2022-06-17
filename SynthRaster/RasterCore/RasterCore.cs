@@ -128,7 +128,7 @@ namespace RasterCore
             {
                 for (int currentColumn = 0; currentColumn < NumColumns; currentColumn++)
                 {
-                    RCPoint rasterPoint = new Point(LeftXCoordinate + ((currentColumn + 0.5) * CellSize), BottomYCoordinate + ((currentRow + 0.5) * CellSize));
+                    RCPoint rasterPoint = new Point(LeftXCoordinate + ((currentColumn + 0.5) * CellSize), (BottomYCoordinate + (NumRows * CellSize)) - ((currentRow + 0.5) * CellSize));
                     IReadOnlyList<StationAndOffset> allSOs = StationAndOffset.CreateSOList(rasterPoint, RoadPoints);
 
                     var stationAndOffset = allSOs.Where(so => so.ProjectsOnSegment == true)

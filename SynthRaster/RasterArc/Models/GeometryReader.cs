@@ -26,7 +26,8 @@ namespace RasterArc.Models
 
                   using (RowCursor cursor = fc.Search())
                   {
-                      int cursorCounter = 0;
+                      int polylineCounter = 0;
+                      int pointCounter = 0;
                       while (cursor.MoveNext())
                       {
                           using (Feature feature = cursor.Current as Feature)
@@ -36,8 +37,6 @@ namespace RasterArc.Models
                                   continue;
                               }
 
-                              //var outerRings = Module1.Current.GetOutermostRings(feature.GetShape() as Polygon); <-- Figure out how to change this.
-
                               Polyline polyline = feature.GetShape() as Polyline;
                               ReadOnlyPartCollection polylineParts = polyline.Parts;
                               IEnumerator<ReadOnlySegmentCollection> cur = polylineParts.GetEnumerator();
@@ -45,15 +44,18 @@ namespace RasterArc.Models
                               while (cur.MoveNext())
                               {
                                   ReadOnlySegmentCollection seg = cur.Current;
-                                  foreach(var s in seg)
+                                  foreach(Segment s in seg)
                                   {
                                       MapPoint point = s.StartPoint;
                                       Points.Add(new Point(point.X, point.Y, point.Z));
+                                      //point = s.EndPoint;
+                                      //Points.Add(new Point(point.X, point.Y, point.Z));
+                                      pointCounter++;
                                   }
                               }
 
                               
-                              cursorCounter++;
+                              polylineCounter++;
                           }
                       }
                   }
