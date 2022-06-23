@@ -2,18 +2,8 @@
 using System.Collections.Generic;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Mapping;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ArcGIS.Desktop.Framework;
-using ArcGIS.Desktop.Core.Geoprocessing;
-using ArcGIS.Desktop.Core;
-using ArcGIS.Core.CIM;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
-using System.Collections.Specialized;
 using RasterCore;
-using ArcGIS.Core.Data;
-using ArcGIS.Core.Data.Raster;
 
 namespace RasterArc.Models
 {
@@ -64,18 +54,16 @@ namespace RasterArc.Models
         public async void CreateAndDisplayRaster(string rasterName = "TestRun.asc", 
             string rasterOutputDirectory = @"C:\Users\lukes\OneDrive\Documents\Research Files\SyntheticRaster\SynthRaster\Raster Files")
         {
-            GeometryReader geometryReader = new GeometryReader();
-            List<RCPoint> Points = geometryReader.CreateRoadPointList();
-            //List<RCPoint> Points = new List<RCPoint> { new Point(1289502.41, 696521.78), new Point(1300086.67, 708023.33), new Point(1285440.00, 716776.67) };
-            RasterCore.RasterCore coreRas = RasterCore.RasterCore.Zeroes(_cellSize, _numColumns, _numRows, _leftXCoordinate, _bottomYCoordinate);
-            coreRas.ComputeParametricSurface(Points, _a, _maxProb, _baseProb, _widthToPeak, _roadWidth);
-            coreRas.WriteToFile(rasterOutputDirectory, rasterName);
-            var map = MapView.Active.Map;
-            string url = @rasterOutputDirectory + @"\" + @rasterName;
-
             StretchColorizerDefinition stretchColorizerDef = new StretchColorizerDefinition();
             await QueuedTask.Run(() =>
             {
+                GeometryReader geometryReader = new GeometryReader(CellSize);
+                List<RCPoint> Points = geometryReader.CreateRoadPointList();
+                RasterCore.RasterCore coreRas = RasterCore.RasterCore.Zeroes(_cellSize, _numColumns, _numRows, _leftXCoordinate, _bottomYCoordinate);
+                coreRas.ComputeParametricSurface(Points, _a, _maxProb, _baseProb, _widthToPeak, _roadWidth);
+                coreRas.WriteToFile(rasterOutputDirectory, rasterName);
+                var map = MapView.Active.Map;
+                string url = @rasterOutputDirectory + @"\" + @rasterName;
                 Uri uri = new Uri(url);
                 RasterLayer rasterLayerfromURL =
                   LayerFactory.Instance.CreateRasterLayer(uri, map, 0, rasterName, stretchColorizerDef) as RasterLayer;

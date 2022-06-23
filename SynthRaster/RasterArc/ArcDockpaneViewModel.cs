@@ -35,9 +35,6 @@ namespace RasterArc
             }
         }
 
-        /// <summary>
-        /// Show the DockPane.
-        /// </summary>
         internal static void Show()
         {
             DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
@@ -47,9 +44,6 @@ namespace RasterArc
             pane.Activate();
         }
 
-        /// <summary>
-        /// Text shown near the top of the DockPane.
-        /// </summary>
         private string _heading = "";
         public string Heading
         {
@@ -61,9 +55,6 @@ namespace RasterArc
         }
     }
 
-    /// <summary>
-    /// Button implementation to show the DockPane.
-    /// </summary>
     internal class ArcDockpane_ShowButton : Button
     {
         protected override void OnClick()

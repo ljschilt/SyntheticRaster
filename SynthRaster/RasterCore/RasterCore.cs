@@ -5,19 +5,6 @@ using System.Linq;
 
 namespace RasterCore
 {
-    public class Point : RCPoint
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
-        public double Z { get; set; }
-
-        public Point(double X, double Y, double Z = 0)
-        {
-            this.X = X;
-            this.Y = Y;
-            this.Z = Z;
-        }
-    }
 
     public class RasterCore
     {
@@ -70,7 +57,6 @@ namespace RasterCore
                             }
                             catch
                             {
-                                // To be inputted later.
                             }
                         }
                     }
@@ -168,29 +154,15 @@ namespace RasterCore
                     }
                 }
             }
-
-            //for (int currentRow = 0; currentRow < numRows; currentRow++)
-            //{
-            //    for (int currentColumn = 0; currentColumn < numColumns; currentColumn++)
-            //    {
-            //        var val = rasterGrid[currentRow, currentColumn];
-            //        if (val != Int32.Parse(NoDataValue))
-            //        {
-            //            val *= 498;
-            //            val /= maxValue;
-            //            rasterGrid[currentRow, currentColumn] = val;
-            //        }
-            //    }
-            //}
         }
 
         public static RasterCore Zeroes(
-                    double cellSize,
-                    int numColumns,
-                    int numRows,
-                    double leftXCoordinate,
-                    double bottomYCoordinate,
-                    string noDataValue = "-9999")
+            double cellSize,
+            int numColumns,
+            int numRows,
+            double leftXCoordinate,
+            double bottomYCoordinate,
+            string noDataValue = "-9999")
         {
             var newRaster = new RasterCore
             {
@@ -212,6 +184,19 @@ namespace RasterCore
             }
 
             return newRaster;
+        }
+    }
+    public class Point : RCPoint
+    {
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Z { get; set; }
+
+        public Point(double X, double Y, double Z = 0)
+        {
+            this.X = X;
+            this.Y = Y;
+            this.Z = Z;
         }
     }
 }

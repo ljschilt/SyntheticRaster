@@ -11,7 +11,7 @@
      <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <extensions:DesignOnlyResourceDictionary Source="pack://application:,,,/ArcGIS.Desktop.Framework;component\Themes\Default.xaml"/>
+                <extensions:DesignOnlyResourceDictionary/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -22,7 +22,7 @@
         </Grid.RowDefinitions>
 
         <DockPanel Grid.Row="0" LastChildFill="true" KeyboardNavigation.TabNavigation="Local" Height="30">
-            <TextBlock Grid.Column="1" Text="{Binding Heading}" Style="{DynamicResource Esri_TextBlockDockPaneHeader}">
+            <TextBlock Grid.Column="1" Text="{Binding Heading}">
                 <TextBlock.ToolTip>
                     <WrapPanel Orientation="Vertical" MaxWidth="300">
                         <TextBlock Text="{Binding Heading}" TextWrapping="Wrap"/>
@@ -52,7 +52,7 @@
 		<!-- Combo Box for layer input -->
 		<StackPanel Grid.Row="0" Orientation="Vertical">
 			<Label x:Name="lblComboBox" Content="Select Layer:" HorizontalAlignment="Left" Margin="10,220,0,0" VerticalAlignment="Top" Width="119"/>
-			<ComboBox ItemsSource="{Binding Layers}"  SelectedItem="{Binding SelectedLayer, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,0,0,0" VerticalAlignment="Top" Width="244"/>
+			<ComboBox ItemsSource="{Binding LayersInMap}"  SelectedItem="{Binding SelectedLayer, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,0,0,0" VerticalAlignment="Top" Width="244"/>
 		</StackPanel>
 
 		<Label x:Name="lblInflectionWidth" Content="Inflection Width" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top"/>
@@ -66,7 +66,7 @@
 		<TextBox x:Name="txtRasterOutputDirectory" Text = "{Binding Path=Raster.RasterOutputDirectory, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="150,296,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
 
 		<StackPanel Grid.Row="1" Margin="10" HorizontalAlignment="Center">
-			<Button Command="{Binding DisplayRaster}" Content="Display Raster" Style="{DynamicResource Esri_Button}" />
+			<Button Command="{Binding DisplayRaster}" Content="Display Raster" />
 		</StackPanel>
 			
 	</Grid>
