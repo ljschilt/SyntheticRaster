@@ -8,6 +8,7 @@ namespace RasterCore
         public double Station { get; private set; }
         public double Offset { get; private set; }
         public bool ProjectsOnSegment { get; private set; } = true;
+        public bool ProjectsOnEndCap { get; private set; } = false;
 
         public StationAndOffset(RCPoint rasterPoint, int firstSegmentPoint, List<RCPoint> RoadPoints)
         {
@@ -41,7 +42,26 @@ namespace RasterCore
             double endStation = CalculateStation(firstSegmentPoint + 1, RoadPoints);
 
             ProjectsOnSegment = Station >= beginStation && Station <= endStation;
-        }
+
+            if (!ProjectsOnSegment)
+            {
+                ProjectsOnSegment = true;
+                if (Station < beginStation)
+                {
+                    Offset = CalculateDistance(rasterPoint, RoadPoints[firstSegmentPoint]);
+                }
+                else
+                {
+                    Offset = CalculateDistance(rasterPoint, RoadPoints[firstSegmentPoint + 1]);
+                }
+            }
+
+            if (Offset == CalculateDistance(rasterPoint, RoadPoints[0]) 
+                || Offset == CalculateDistance(rasterPoint, RoadPoints[RoadPoints.Count - 1]))
+            {
+                ProjectsOnEndCap = true;
+            }
+    }
 
         public double CalculateDistance(RCPoint point1, RCPoint point2)
         {

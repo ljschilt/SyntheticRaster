@@ -121,7 +121,7 @@ namespace RasterCore
                         .OrderBy(so => Math.Abs(so.Offset))
                         .FirstOrDefault();
 
-                    if (stationAndOffset == null)
+                    if (stationAndOffset == null || stationAndOffset.ProjectsOnEndCap)
                     {
                         RasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
                     }

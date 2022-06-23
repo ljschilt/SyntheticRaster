@@ -17,8 +17,6 @@ namespace RasterCore
             this.Y = Y;
         }
 
-        // TODO: Utilize operator overloading
-
         public Vector(RCPoint startPoint, RCPoint endPoint)
         {
             this.X = endPoint.X - startPoint.X;
