@@ -1,5 +1,6 @@
 ﻿using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
+using ArcGIS.Desktop.Framework.Dialogs;
 using RasterArc.Models;
 using System.Windows.Input;
 
@@ -27,8 +28,15 @@ namespace RasterArc
                 {
                     _displayRaster = new RelayCommand(() =>
                     {
-                        BasicRaster raster = new BasicRaster();
-                        raster.CreateAndDisplayRaster(Raster.RasterFilename, Raster.RasterOutputDirectory);
+                        if (Raster.HandleExceptions().Equals("No exceptions"))
+                        {
+                            Raster.CreateAndDisplayRaster(Raster.RasterFilename, Raster.RasterOutputDirectory);
+                            _ = MessageBox.Show("Successfully created the raster file.");
+                        }
+                        else
+                        {
+                            _ = MessageBox.Show(Raster.HandleExceptions());
+                        }
                     }, () => true);
                 }
                 return _displayRaster;
@@ -38,20 +46,15 @@ namespace RasterArc
         internal static void Show()
         {
             DockPane pane = FrameworkApplication.DockPaneManager.Find(_dockPaneID);
-            if (pane == null)
-                return;
-
+            if (pane == null) { return; }
             pane.Activate();
         }
 
         private string _heading = "";
         public string Heading
         {
-            get { return _heading; }
-            set
-            {
-                SetProperty(ref _heading, value, () => Heading);
-            }
+            get => _heading;
+            set => SetProperty(ref _heading, value, () => Heading);
         }
     }
 

@@ -53,7 +53,7 @@ namespace RasterCore
         {
             if (scalar == 0)
             {
-                // Note: Include an exception here.
+                throw new DivideByZeroException();
             }
             return new Vector(vector.X / scalar, vector.Y / scalar);
         }

@@ -4,6 +4,7 @@ using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Mapping;
 using ArcGIS.Desktop.Framework.Threading.Tasks;
 using RasterCore;
+using System.IO;
 
 namespace RasterArc.Models
 {
@@ -68,6 +69,44 @@ namespace RasterArc.Models
                 RasterLayer rasterLayerfromURL =
                   LayerFactory.Instance.CreateRasterLayer(uri, map, 0, rasterName, stretchColorizerDef) as RasterLayer;
             });
+        }
+
+        public string HandleExceptions()
+        {
+            string exceptionString = "";
+            bool exception = false;
+            if (CellSize <= 0)
+            {
+                if (exception) { exceptionString += "\n"; }
+                exception = true;
+                exceptionString += "Invalid cell size. Cell size must be a non-zero positive value.";
+            }
+            if (NumColumns <= 0)
+            {
+                if (exception) { exceptionString += "\n"; }
+                exception = true;
+                exceptionString += "Invalid number of columns. The number of columns must be a non-zero positive integer.";
+            }
+            if (NumRows <= 0)
+            {
+                if (exception) { exceptionString += "\n"; }
+                exception = true;
+                exceptionString += "Invalid number of rows. The number of rows must be a non-zero positive integer.";
+            }
+            if (RoadWidth <= 0)
+            {
+                if (exception) { exceptionString += "\n"; }
+                exception = true;
+                exceptionString += "Invalid road width. Road width must be a non-zero positive value.";
+            }
+            if (!Directory.Exists(RasterOutputDirectory))
+            {
+                if (exception) { exceptionString += "\n"; }
+                exception = true;
+                exceptionString += "Invalid output directory. Check if the file path exists!";
+            }
+
+            return exception ? exceptionString : "No exceptions";
         }
 
         bool is_disposed = false;
