@@ -109,7 +109,7 @@ namespace RasterArc.Models
             return exception ? exceptionString : "No exceptions";
         }
 
-        bool is_disposed = false;
+        private bool is_disposed = false;
         protected virtual void Dispose(bool disposing)
         {
             if (!is_disposed)
@@ -118,7 +118,7 @@ namespace RasterArc.Models
                 {
                 }
             }
-            this.is_disposed = true;
+            is_disposed = true;
         }
 
         public void Dispose()

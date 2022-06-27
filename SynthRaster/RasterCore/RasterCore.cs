@@ -114,43 +114,35 @@ namespace RasterCore
             {
                 for (int currentColumn = 0; currentColumn < NumColumns; currentColumn++)
                 {
-                    RCPoint rasterPoint = new Point(LeftXCoordinate + ((currentColumn + 0.5) * CellSize), (BottomYCoordinate + (NumRows * CellSize)) - ((currentRow + 0.5) * CellSize));
+                    RCPoint rasterPoint = new Point(LeftXCoordinate + ((currentColumn + 0.5) * CellSize), BottomYCoordinate + (NumRows * CellSize) - ((currentRow + 0.5) * CellSize));
                     IReadOnlyList<StationAndOffset> allSOs = StationAndOffset.CreateSOList(rasterPoint, RoadPoints);
 
-                    var stationAndOffset = allSOs.Where(so => so.ProjectsOnSegment == true)
+                    StationAndOffset stationAndOffset = allSOs.Where(so => so.ProjectsOnSegment)
                         .OrderBy(so => Math.Abs(so.Offset))
                         .FirstOrDefault();
-
-                    if (stationAndOffset == null || stationAndOffset.ProjectsOnEndCap)
+                    if (stationAndOffset.Offset >= RoadWidth)
                     {
-                        RasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
-                    }
-                    else
-                    {
-                        double x = stationAndOffset.Offset;
-                        if (x >= RoadWidth)
+                        if (stationAndOffset == null || stationAndOffset.ProjectsOnEndCap)
                         {
-                            x -= widthToPeak;
-                            double xSquared = x * x;
-
-                            double probabilityOfDevelopment = ( (aSquared * ProbDifference) / 
-                                ((xSquared + aSquared) * Math.Sqrt((xSquared / aSquared) + 1.0))) + baseProb;
-
-                            if (probabilityOfDevelopment >= 0)
-                            {
-                                RasterGrid[currentRow, currentColumn] = probabilityOfDevelopment;
-                            }
-                            else
-                            {
-                                RasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
-                            }
-
-                            maxValue = RasterGrid[currentRow, currentColumn] > maxValue ? RasterGrid[currentRow, currentColumn] : maxValue;
+                            RasterGrid[currentRow, currentColumn] = 0;
                         }
                         else
                         {
-                            RasterGrid[currentRow, currentColumn] = Int32.Parse(NoDataValue);
+                            double x = stationAndOffset.Offset;
+                            x -= widthToPeak;
+                            double xSquared = x * x;
+                            // TODO: Create a list of probs. Save the max value.
+                            double probabilityOfDevelopment = ((aSquared * ProbDifference) /
+                                ((xSquared + aSquared) * Math.Sqrt((xSquared / aSquared) + 1.0))) + baseProb;
+
+                            RasterGrid[currentRow, currentColumn] = probabilityOfDevelopment >= 0 ? probabilityOfDevelopment : 0;
+
+                            maxValue = RasterGrid[currentRow, currentColumn] > maxValue ? RasterGrid[currentRow, currentColumn] : maxValue;
                         }
+                    }
+                    else
+                    {
+                        RasterGrid[currentRow, currentColumn] = int.Parse(NoDataValue);
                     }
                 }
             }

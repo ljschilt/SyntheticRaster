@@ -10,7 +10,7 @@ using System;
 
 namespace RasterArc.Models
 {
-    class GeometryReader
+    internal class GeometryReader
     {
         public List<LineSegment> Lines { get; private set; }
 
@@ -18,7 +18,7 @@ namespace RasterArc.Models
         {
             List<LineSegment> Lines = new List<LineSegment>();
             FeatureLayer layer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>()
-                .FirstOrDefault(L => L.Name == "BethelChurch");
+                .FirstOrDefault(L => L.Name == "Roads3");
 
             if (!(layer.GetTable() is FeatureClass fc))
             {
@@ -74,7 +74,6 @@ namespace RasterArc.Models
 
             foreach (LineSegment aLine in Lines)
             {
-                var thatOtherThing = aLine.UniqueString;
                 beginX = (int)(aLine.BeginPoint.X / cellSize);
                 beginY = (int)(aLine.BeginPoint.Y / cellSize);
                 key = (beginX, beginY);
@@ -83,7 +82,7 @@ namespace RasterArc.Models
                     d[key] = new List<LineSegment>();
                 }
 
-                var alreadyInThere = Convert.ToBoolean(d[key].Where(item => item.UniqueString == aLine.UniqueString).Count());
+                bool alreadyInThere = Convert.ToBoolean(d[key].Where(item => item.UniqueString == aLine.UniqueString).Count());
                 if(!alreadyInThere)
                 {
                     d[key].Add(aLine);
@@ -108,7 +107,7 @@ namespace RasterArc.Models
             List<LineSegment> sortedLines = new List<LineSegment>();
 
             // Does not account for closed loops
-            LineSegment currentSegment = new LineSegment(new Point(0,0), new Point(0, 0));
+            LineSegment currentSegment = new LineSegment(new Point(0,0), new Point(0,0));
             (int, int) currentKey = (0,0);
 
             foreach (KeyValuePair<(int, int), List<LineSegment>> dItem in d)
@@ -134,14 +133,7 @@ namespace RasterArc.Models
                         currentKey = dItem.Key;
                         currentPoint = new Point(currentKey.Item1, currentKey.Item2);
 
-                        if (dItem.Value[0] == currentSegment)
-                        {
-                            currentSegment = dItem.Value[1];
-                        }
-                        else
-                        {
-                            currentSegment = dItem.Value[0];
-                        }
+                        currentSegment = dItem.Value[0] == currentSegment ? dItem.Value[1] : dItem.Value[0];
 
                         if (currentPoint == currentSegment.EndPoint) { currentSegment.SwapDirection(); }
                         sortedLines.Add(currentSegment);
