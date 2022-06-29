@@ -12,7 +12,9 @@ namespace RasterArc.Models
 {
     internal class GeometryReader
     {
-        public List<LineSegment> Lines { get; private set; }
+        public List<AnchorPoint> AnchorPoints { get; private set; }
+
+        public List<List<LineSegment>> RoadNetwork { get; private set; }
 
         public GeometryReader(double cellSize)
         {
@@ -58,12 +60,14 @@ namespace RasterArc.Models
                     }
                 }
             }
-            this.Lines = Lines;
-            SortSegmentsGeometrically(cellSize);
+            SortSegmentsGeometrically(cellSize, Lines);
         }
 
-        public void SortSegmentsGeometrically(double cellSize)
+        public void SortSegmentsGeometrically(double cellSize, List<LineSegment> Lines)
         {
+            RoadNetwork = new List<List<LineSegment>>();
+
+            // Create the dictionary
             Dictionary<(int, int), List<LineSegment>> d = new Dictionary<(int, int), List<LineSegment>>();
 
             int beginX;
@@ -72,6 +76,7 @@ namespace RasterArc.Models
             int endY;
             (int, int) key;
 
+            // Populate the dictionary
             foreach (LineSegment aLine in Lines)
             {
                 beginX = (int)(aLine.BeginPoint.X / cellSize);
@@ -103,12 +108,10 @@ namespace RasterArc.Models
                 }
             }
 
-            int linesCounter = Lines.Count;
-            List<LineSegment> sortedLines = new List<LineSegment>();
-
-            // Does not account for closed loops
-            LineSegment currentSegment = new LineSegment(new Point(0,0), new Point(0,0));
-            (int, int) currentKey = (0,0);
+            // Start at a terminal point by declaring a first list of line segments and a line segment.
+            List<LineSegment> currentLine = new List<LineSegment>();
+            LineSegment currentSegment = new LineSegment(new Point(0, 0), new Point(0, 0));
+            (int, int) currentKey = (0, 0);
 
             foreach (KeyValuePair<(int, int), List<LineSegment>> dItem in d)
             {
@@ -121,14 +124,18 @@ namespace RasterArc.Models
             }
 
             Point currentPoint = new Point(currentKey.Item1, currentKey.Item2);
-            if(currentPoint == currentSegment.EndPoint) { currentSegment.SwapDirection(); }
-            sortedLines.Add(currentSegment);
+            if (currentPoint == currentSegment.EndPoint) { currentSegment.SwapDirection(); }
+            currentLine.Add(currentSegment);
 
-            for (int counter = 1; counter < linesCounter; counter++)
+            // Continue on the path until an intersection point is reached.
+            bool hitIntersection = false;
+            for (int counter = 1; counter < Lines.Count; counter++)
             {
                 foreach (KeyValuePair<(int, int), List<LineSegment>> dItem in d)
                 {
-                    if (dItem.Value.Count == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment) && dItem.Key != currentKey)
+                    int segmentCount = dItem.Value.Count;
+
+                    if (segmentCount == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment) && dItem.Key != currentKey)
                     {
                         currentKey = dItem.Key;
                         currentPoint = new Point(currentKey.Item1, currentKey.Item2);
@@ -136,59 +143,64 @@ namespace RasterArc.Models
                         currentSegment = dItem.Value[0] == currentSegment ? dItem.Value[1] : dItem.Value[0];
 
                         if (currentPoint == currentSegment.EndPoint) { currentSegment.SwapDirection(); }
-                        sortedLines.Add(currentSegment);
-
+                        currentLine.Add(currentSegment);
                         continue;
+                    }
+
+                    else if (segmentCount > 2 && dItem.Key != currentKey)
+                    {
+                        if (hitIntersection) { break; }
+
+                        for (int i = 0; i < segmentCount; i++) // Check every segment
+                        {
+                            LineSegment segment = dItem.Value[i];
+                            if ((segment == currentSegment)) // For the segment that shares the point.
+                            {
+                                hitIntersection = true;
+                                break;
+                            }
+                        }
                     }
                 }
             }
 
-            this.Lines = sortedLines;
-        }
+            RoadNetwork.Add(currentLine);
 
-        public List<RCPoint> CreateRoadPointList()
-        {
-            List<RCPoint> RoadPoints = new List<RCPoint>
-            {
-                Lines[0].BeginPoint
-            };
+            // If the previous line did not hit an intersection, then let the fun begin!
+            if (!hitIntersection) { return; }
 
-            for (int i = 0; i < Lines.Count; i++)
+            // Set the first anchor point!
+            List<AnchorPoint> AnchorPoints = new List<AnchorPoint>();
+            AnchorPoint firstAnchorPoint = new AnchorPoint();
+            AnchorPoints.Add(firstAnchorPoint);
+            int currentAnchorPoint = 0;
+
+            while (AnchorPoints[0].BranchesLeft())
             {
-                RoadPoints.Add(Lines[i].EndPoint);
+
             }
-
-            return RoadPoints;
         }
 
-        public int CheckIntersectionCount(LineSegment segment)
+        public List<List<RCPoint>> CreateRoadNetworkList()
         {
-            int count = 0;
+            List<List<RCPoint>> RoadNetworkPoints = new List<List<RCPoint>>();
 
-            for (int i = 0; i < Lines.Count; i++)
+            for (int i = 0; i < RoadNetwork.Count; i++)
             {
-                if (segment.CheckForIntersection(Lines[i]) && !(segment.SameBeginPoints(Lines[i]) && segment.SameEndPoints(Lines[i])))
+                List<RCPoint> RoadPoints = new List<RCPoint>
                 {
-                    count++;
-                }
-            }
+                    RoadNetwork[i][0].BeginPoint
+                };
 
-            return count;
-        }
-
-        public int CheckIntersectionCount(RCPoint point)
-        {
-            int count = 0;
-
-            for (int i = 0; i < Lines.Count; i++)
-            {
-                if (point == Lines[i].BeginPoint || point == Lines[i].EndPoint)
+                for (int j = 0; j < RoadNetwork[i].Count; j++)
                 {
-                    count++;
+                    RoadPoints.Add(RoadNetwork[i][j].EndPoint);
                 }
-            }
 
-            return count;
+                RoadNetworkPoints.Add(RoadPoints);
+            }
+            
+            return RoadNetworkPoints;
         }
     }
 }

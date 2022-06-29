@@ -59,7 +59,7 @@ namespace RasterArc.Models
             await QueuedTask.Run(() =>
             {
                 GeometryReader geometryReader = new GeometryReader(CellSize);
-                List<RCPoint> Points = geometryReader.CreateRoadPointList();
+                List<List<RCPoint>> Points = geometryReader.CreateRoadNetworkList();
                 RasterCore.RasterCore coreRas = RasterCore.RasterCore.Zeroes(_cellSize, _numColumns, _numRows, _leftXCoordinate, _bottomYCoordinate);
                 coreRas.ComputeParametricSurface(Points, _a, _maxProb, _baseProb, _widthToPeak, _roadWidth);
                 coreRas.WriteToFile(rasterOutputDirectory, rasterName);

@@ -104,46 +104,61 @@ namespace RasterCore
             }
         }
 
-        public void ComputeParametricSurface(List<RCPoint> RoadPoints, double a, double maxProb, double baseProb, double widthToPeak, double RoadWidth)
+        public void ComputeParametricSurface(List<List<RCPoint>> RoadNetwork, double a, double maxProb, double baseProb, double widthToPeak, double RoadWidth)
         {
-            double maxValue = 0.0;
             double aSquared = a * a;
             double ProbDifference = maxProb - baseProb;
+
+            //for (int listCounter = 0; listCounter < RoadNetwork.Count; listCounter++ )
+            foreach (var road in RoadNetwork)
+            {
+                for (int currentRow = 0; currentRow < NumRows; currentRow++)
+                {
+                    for (int currentColumn = 0; currentColumn < NumColumns; currentColumn++)
+                    {
+                        var existingCellValue = RasterGrid[currentRow, currentColumn];
+                        if (existingCellValue == int.Parse(NoDataValue))
+                            continue;
+
+                        RCPoint rasterPoint = new Point(LeftXCoordinate + ((currentColumn + 0.5) * CellSize), BottomYCoordinate + (NumRows * CellSize) - ((currentRow + 0.5) * CellSize));
+                        IReadOnlyList<StationAndOffset> allSOs = StationAndOffset.CreateSOList(rasterPoint, road);
+
+                        StationAndOffset closestStationAndOffset = allSOs.Where(so => so.ProjectsOnSegment)
+                            .OrderBy(so => Math.Abs(so.Offset))
+                            .FirstOrDefault();
+
+                        double currentOffset = closestStationAndOffset.Offset;
+
+                        if (closestStationAndOffset.Offset <= RoadWidth)
+                        {
+                            RasterGrid[currentRow, currentColumn] = int.Parse(NoDataValue);
+                        }
+                        else
+                        {
+                            if (!(closestStationAndOffset == null || closestStationAndOffset.ProjectsOnEndCap))
+                            {
+                                double x = closestStationAndOffset.Offset;
+                                x -= widthToPeak;
+                                double xSquared = x * x;
+
+                                double probabilityOfDevelopment = ((aSquared * ProbDifference) /
+                                    ((xSquared + aSquared) * Math.Sqrt((xSquared / aSquared) + 1.0))) + baseProb;
+
+                                if(probabilityOfDevelopment > existingCellValue)
+                                {
+                                    RasterGrid[currentRow, currentColumn] = probabilityOfDevelopment;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
             for (int currentRow = 0; currentRow < NumRows; currentRow++)
             {
                 for (int currentColumn = 0; currentColumn < NumColumns; currentColumn++)
                 {
-                    RCPoint rasterPoint = new Point(LeftXCoordinate + ((currentColumn + 0.5) * CellSize), BottomYCoordinate + (NumRows * CellSize) - ((currentRow + 0.5) * CellSize));
-                    IReadOnlyList<StationAndOffset> allSOs = StationAndOffset.CreateSOList(rasterPoint, RoadPoints);
-
-                    StationAndOffset stationAndOffset = allSOs.Where(so => so.ProjectsOnSegment)
-                        .OrderBy(so => Math.Abs(so.Offset))
-                        .FirstOrDefault();
-                    if (stationAndOffset.Offset >= RoadWidth)
-                    {
-                        if (stationAndOffset == null || stationAndOffset.ProjectsOnEndCap)
-                        {
-                            RasterGrid[currentRow, currentColumn] = 0;
-                        }
-                        else
-                        {
-                            double x = stationAndOffset.Offset;
-                            x -= widthToPeak;
-                            double xSquared = x * x;
-                            // TODO: Create a list of probs. Save the max value.
-                            double probabilityOfDevelopment = ((aSquared * ProbDifference) /
-                                ((xSquared + aSquared) * Math.Sqrt((xSquared / aSquared) + 1.0))) + baseProb;
-
-                            RasterGrid[currentRow, currentColumn] = probabilityOfDevelopment >= 0 ? probabilityOfDevelopment : 0;
-
-                            maxValue = RasterGrid[currentRow, currentColumn] > maxValue ? RasterGrid[currentRow, currentColumn] : maxValue;
-                        }
-                    }
-                    else
-                    {
-                        RasterGrid[currentRow, currentColumn] = int.Parse(NoDataValue);
-                    }
+                    if (RasterGrid[currentRow, currentColumn] == 0) { RasterGrid[currentRow, currentColumn] = int.Parse(NoDataValue); }
                 }
             }
         }
