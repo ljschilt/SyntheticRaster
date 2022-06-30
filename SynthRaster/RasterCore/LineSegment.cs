@@ -11,6 +11,8 @@ namespace RasterCore
         public RCPoint BeginPoint { get; private set; }
         public RCPoint EndPoint { get; private set; }
 
+        public bool IsChecked { get; set; }
+
         private double? Length_ = null;
         public double Length
         { 
@@ -32,6 +34,7 @@ namespace RasterCore
         {
             this.BeginPoint = BeginPoint;
             this.EndPoint = EndPoint;
+            IsChecked = false;
         }
 
         public void SwapDirection()

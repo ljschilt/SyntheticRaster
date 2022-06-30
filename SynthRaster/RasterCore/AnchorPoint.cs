@@ -8,20 +8,25 @@ namespace RasterCore
 {
     public class AnchorPoint
     {
-        private (int,int) Location { get; set; }
-        private List<LineSegment> Intersections { get; set; }
-        private double UncheckedBranches { get; set; }
+        public (int, int) Location { get; set; }
+        public List<LineSegment> IntersectingLines { get; set; }
+        public double UncheckedBranches { get; set; }
 
-        public AnchorPoint((int, int) Location, List<LineSegment> Intersections)
+        public AnchorPoint((int, int) Location, List<LineSegment> IntersectingLines)
         {
             this.Location = Location;
-            this.Intersections = Intersections;
-            this.UncheckedBranches = Intersections.Count;
+            this.IntersectingLines = IntersectingLines;
+            this.UncheckedBranches = IntersectingLines.Count - 1;
         }
 
         public bool BranchesLeft()
         {
             return UncheckedBranches != 0;
+        }
+
+        public bool OnLocation((int, int) Location)
+        {
+            return this.Location == Location;
         }
     }
 }

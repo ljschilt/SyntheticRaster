@@ -12,7 +12,7 @@ namespace RasterArc.Models
 {
     internal class GeometryReader
     {
-        public List<AnchorPoint> AnchorPoints { get; private set; }
+        public List<AnchorPoint> AnchorPoints { get; set; }
 
         public List<List<LineSegment>> RoadNetwork { get; private set; }
 
@@ -20,7 +20,7 @@ namespace RasterArc.Models
         {
             List<LineSegment> Lines = new List<LineSegment>();
             FeatureLayer layer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>()
-                .FirstOrDefault(L => L.Name == "Roads3");
+                .FirstOrDefault(L => L.Name == "Bethel&WhiteEagleIntersection");
 
             if (!(layer.GetTable() is FeatureClass fc))
             {
@@ -126,13 +126,17 @@ namespace RasterArc.Models
             Point currentPoint = new Point(currentKey.Item1, currentKey.Item2);
             if (currentPoint == currentSegment.EndPoint) { currentSegment.SwapDirection(); }
             currentLine.Add(currentSegment);
+            List<LineSegment> currentList = new List<LineSegment>();
 
             // Continue on the path until an intersection point is reached.
+            List<LineSegment> firstAnchorList = new List<LineSegment> { new LineSegment(new Point(0,0), new Point(1,1)) };
             bool hitIntersection = false;
             for (int counter = 1; counter < Lines.Count; counter++)
             {
                 foreach (KeyValuePair<(int, int), List<LineSegment>> dItem in d)
                 {
+                    if (hitIntersection) { break; }
+
                     int segmentCount = dItem.Value.Count;
 
                     if (segmentCount == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment) && dItem.Key != currentKey)
@@ -140,7 +144,16 @@ namespace RasterArc.Models
                         currentKey = dItem.Key;
                         currentPoint = new Point(currentKey.Item1, currentKey.Item2);
 
-                        currentSegment = dItem.Value[0] == currentSegment ? dItem.Value[1] : dItem.Value[0];
+                        if (currentSegment == dItem.Value[0])
+                        {
+                            currentSegment = dItem.Value[1];
+                            dItem.Value[1].IsChecked = true;
+                        }
+                        else
+                        {
+                            currentSegment = dItem.Value[0];
+                            dItem.Value[0].IsChecked = true;
+                        }
 
                         if (currentPoint == currentSegment.EndPoint) { currentSegment.SwapDirection(); }
                         currentLine.Add(currentSegment);
@@ -156,6 +169,9 @@ namespace RasterArc.Models
                             LineSegment segment = dItem.Value[i];
                             if ((segment == currentSegment)) // For the segment that shares the point.
                             {
+                                currentKey = dItem.Key;
+                                currentPoint = new Point(currentKey.Item1, currentKey.Item2);
+                                currentList = dItem.Value;
                                 hitIntersection = true;
                                 break;
                             }
@@ -167,18 +183,127 @@ namespace RasterArc.Models
             RoadNetwork.Add(currentLine);
 
             // If the previous line did not hit an intersection, then let the fun begin!
-            if (!hitIntersection) { return; }
-
-            // Set the first anchor point!
-            List<AnchorPoint> AnchorPoints = new List<AnchorPoint>();
-            AnchorPoint firstAnchorPoint = new AnchorPoint();
-            AnchorPoints.Add(firstAnchorPoint);
-            int currentAnchorPoint = 0;
-
-            while (AnchorPoints[0].BranchesLeft())
+            if (hitIntersection) 
             {
+                // Set the first anchor point
+                AnchorPoints = new List<AnchorPoint>();
+                AnchorPoint firstAnchorPoint = new AnchorPoint(currentKey, currentList);
+                AnchorPoints.Add(firstAnchorPoint);
+                int currentAnchorPoint = 0;
 
+                while (AnchorPoints[0].BranchesLeft())
+                {
+                    if (!AnchorPoints[currentAnchorPoint].BranchesLeft())
+                    {
+                        // Set the current anchor point to the next point that has unchecked branches
+                        do { currentAnchorPoint--; } while (!AnchorPoints[currentAnchorPoint].BranchesLeft());
+
+                        // Subtract one from the current anchor point's unchecked branches.
+                        AnchorPoints[currentAnchorPoint].UncheckedBranches -= 1;
+                    }
+                    else
+                    {
+                        // Create a new list of line segments for the new branch
+                        currentLine = new List<LineSegment>();
+                        currentKey = AnchorPoints[currentAnchorPoint].Location;
+                        currentPoint = new Point(currentKey.Item1, currentKey.Item2);
+
+                        // Pick an unchecked branch
+                        foreach (LineSegment line in AnchorPoints[currentAnchorPoint].IntersectingLines)
+                        {
+                            if (!line.IsChecked) // If a line is unchecked
+                            {
+                                // Add the first segment to the list
+                                currentSegment = line;
+                                line.IsChecked = true;
+                                currentLine.Add(currentSegment);
+                                break;
+                            }
+                        }
+
+                        int segmentCount = 2;
+                        bool notACriticalPoint = true;
+                        while (notACriticalPoint)  // The next point is not a terminal point, anchor point, or intersection point (segmentCount == 2)
+                        {
+                            // Continue along the path, adding segments to the list of line segments
+                            foreach (KeyValuePair<(int, int), List<LineSegment>> dItem in d)
+                            {
+                                segmentCount = dItem.Value.Count;
+
+                                if (segmentCount == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment) && dItem.Key != currentKey)
+                                {
+                                    currentKey = dItem.Key;
+                                    currentPoint = new Point(currentKey.Item1, currentKey.Item2);
+
+                                    if (currentSegment == dItem.Value[0])
+                                    {
+                                        currentSegment = dItem.Value[1];
+                                        dItem.Value[1].IsChecked = true;
+                                    }
+                                    else
+                                    {
+                                        currentSegment = dItem.Value[0];
+                                        dItem.Value[0].IsChecked = true;
+                                    }
+
+                                    if (currentPoint == currentSegment.EndPoint) { currentSegment.SwapDirection(); }
+                                    currentLine.Add(currentSegment);
+                                    continue;
+                                }
+                                else if (segmentCount != 2 && dItem.Key != currentKey)
+                                {
+                                    for (int i = 0; i < segmentCount; i++) // Check every segment
+                                    {
+                                        LineSegment segment = dItem.Value[i];
+                                        if ((segment == currentSegment)) // For the segment that shares the point.
+                                        {
+                                            currentKey = dItem.Key;
+                                            currentList = dItem.Value;
+                                            break;
+                                        }
+                                    }
+
+                                    notACriticalPoint = false;
+                                    break;
+                                }
+                            }
+                        }
+                        if (segmentCount == 1) // If the next point is a terminal point
+                        {
+                            // Add the list to the road network.
+                            RoadNetwork.Add(currentLine);
+
+                            // Subtract one from unchecked branches for the current anchor point.
+                            AnchorPoints[currentAnchorPoint].UncheckedBranches -= 1;
+                        }
+                        else if (segmentCount >= 2 && CheckAnchorPoint(currentKey) != -1) // If the next point is an anchor point
+                        {
+                            // Add the list to the road network.
+                            RoadNetwork.Add(currentLine);
+
+                            // Identify the anchor point that was hit
+                            AnchorPoint hitAnchorPoint = AnchorPoints[CheckAnchorPoint(currentKey)];
+                            // Subtract one from unchecked branches for both the current anchor point and the anchor point hit.
+                            AnchorPoints[currentAnchorPoint].UncheckedBranches -= 1;
+                            hitAnchorPoint.UncheckedBranches -= 1;
+                        }
+                        else // The next point is an intersection point
+                        {
+                            // Create a new anchor point
+                            AnchorPoint newAnchorPoint = new AnchorPoint(currentKey, currentList);
+                            AnchorPoints.Add(newAnchorPoint);
+
+                            // Set the current anchor point to be this new anchor point.
+                            currentAnchorPoint = AnchorPoints.FindIndex(a => a.Equals(newAnchorPoint));
+                        }
+                    }
+                }
             }
+        }
+
+        public int CheckAnchorPoint((int, int) key)
+        {
+            return AnchorPoints.FindIndex(a => a.OnLocation(key));
         }
 
         public List<List<RCPoint>> CreateRoadNetworkList()
