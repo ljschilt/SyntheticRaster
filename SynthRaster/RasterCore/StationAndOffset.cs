@@ -45,7 +45,6 @@ namespace RasterCore
 
             if (!ProjectsOnSegment)
             {
-                ProjectsOnSegment = true;
                 if (Station < beginStation)
                 {
                     Offset = CalculateDistance(rasterPoint, RoadPoints[firstSegmentPoint]);
@@ -54,13 +53,15 @@ namespace RasterCore
                 {
                     Offset = CalculateDistance(rasterPoint, RoadPoints[firstSegmentPoint + 1]);
                 }
+
+                if (Offset == CalculateDistance(rasterPoint, RoadPoints[0])
+                || Offset == CalculateDistance(rasterPoint, RoadPoints[RoadPoints.Count - 1]))
+                {
+                    ProjectsOnEndCap = true;
+                }
             }
 
-            if (Offset == CalculateDistance(rasterPoint, RoadPoints[0]) 
-                || Offset == CalculateDistance(rasterPoint, RoadPoints[RoadPoints.Count - 1]))
-            {
-                ProjectsOnEndCap = true;
-            }
+            
     }
 
         public double CalculateDistance(RCPoint point1, RCPoint point2)

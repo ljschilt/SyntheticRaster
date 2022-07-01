@@ -58,7 +58,7 @@ namespace RasterArc.Models
             StretchColorizerDefinition stretchColorizerDef = new StretchColorizerDefinition();
             await QueuedTask.Run(() =>
             {
-                GeometryReader geometryReader = new GeometryReader(CellSize);
+                GeometryReader geometryReader = new GeometryReader(CellSize, "BethelChurch");
                 List<List<RCPoint>> Points = geometryReader.CreateRoadNetworkList();
                 RasterCore.RasterCore coreRas = RasterCore.RasterCore.Zeroes(_cellSize, _numColumns, _numRows, _leftXCoordinate, _bottomYCoordinate);
                 coreRas.ComputeParametricSurface(Points, _a, _maxProb, _baseProb, _widthToPeak, _roadWidth);

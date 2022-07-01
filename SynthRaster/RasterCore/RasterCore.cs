@@ -115,17 +115,17 @@ namespace RasterCore
                 {
                     double currentOffset = 0;
                     bool FirstRoadList = true;
+                    RCPoint rasterPoint = new Point(LeftXCoordinate + ((currentColumn + 0.5) * CellSize), BottomYCoordinate + (NumRows * CellSize) - ((currentRow + 0.5) * CellSize));
                     foreach (List<RCPoint> road in RoadNetwork)
                     {
+                        if (currentColumn == 485 && currentRow == 368) { int i = 0; }
+                        
                         double existingCellValue = RasterGrid[currentRow, currentColumn];
                         if (existingCellValue == int.Parse(NoDataValue)) { break; }
-
-                        RCPoint rasterPoint = new Point(LeftXCoordinate + ((currentColumn + 0.5) * CellSize), BottomYCoordinate + (NumRows * CellSize) - ((currentRow + 0.5) * CellSize));
+                        
                         IReadOnlyList<StationAndOffset> allSOs = StationAndOffset.CreateSOList(rasterPoint, road);
 
-                        StationAndOffset closestStationAndOffset = allSOs.Where(so => so.ProjectsOnSegment)
-                            .OrderBy(so => Math.Abs(so.Offset))
-                            .FirstOrDefault();
+                        StationAndOffset closestStationAndOffset = allSOs.OrderBy(so => Math.Abs(so.Offset)).FirstOrDefault();
                         
                         if (FirstRoadList || closestStationAndOffset.Offset <= currentOffset)
                         {

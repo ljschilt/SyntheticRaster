@@ -16,11 +16,11 @@ namespace RasterArc.Models
 
         public List<List<LineSegment>> RoadNetwork { get; private set; }
 
-        public GeometryReader(double cellSize)
+        public GeometryReader(double cellSize, String layerName)
         {
             List<LineSegment> Lines = new List<LineSegment>();
             FeatureLayer layer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>()
-                .FirstOrDefault(L => L.Name == "Bethel&WhiteEagleIntersection");
+                .FirstOrDefault(L => L.Name == "Bethel&WhiteEagleIntersection"); // BethelChurch
 
             if (!(layer.GetTable() is FeatureClass fc))
             {
@@ -79,8 +79,8 @@ namespace RasterArc.Models
             // Populate the dictionary
             foreach (LineSegment aLine in Lines)
             {
-                beginX = (int)(aLine.BeginPoint.X / cellSize);
-                beginY = (int)(aLine.BeginPoint.Y / cellSize);
+                beginX = (int)(aLine.BeginPoint.X / cellSize * 10);
+                beginY = (int)(aLine.BeginPoint.Y / cellSize * 10);
                 key = (beginX, beginY);
                 if (!d.ContainsKey(key))
                 {
@@ -93,8 +93,8 @@ namespace RasterArc.Models
                     d[key].Add(aLine);
                 }
 
-                endX = (int)(aLine.EndPoint.X / cellSize);
-                endY = (int)(aLine.EndPoint.Y / cellSize);
+                endX = (int)(aLine.EndPoint.X / cellSize * 10);
+                endY = (int)(aLine.EndPoint.Y / cellSize * 10);
                 key = (endX, endY);
                 if (!d.ContainsKey(key))
                 {
@@ -118,6 +118,7 @@ namespace RasterArc.Models
                 if (dItem.Value.Count == 1)
                 {
                     currentSegment = dItem.Value[0];
+                    dItem.Value[0].IsChecked = true;
                     currentKey = dItem.Key;
                     break;
                 }
@@ -167,7 +168,7 @@ namespace RasterArc.Models
                         for (int i = 0; i < segmentCount; i++) // Check every segment
                         {
                             LineSegment segment = dItem.Value[i];
-                            if ((segment == currentSegment)) // For the segment that shares the point.
+                            if (segment == currentSegment) // For the segment that shares the point.
                             {
                                 currentKey = dItem.Key;
                                 currentPoint = new Point(currentKey.Item1, currentKey.Item2);
@@ -203,7 +204,7 @@ namespace RasterArc.Models
                     }
                     else
                     {
-                        // Create a new list of line segments for the new branch
+                        // Create a new list of line segments for the new branch. Reset the location to be the current anchor point.
                         currentLine = new List<LineSegment>();
                         currentKey = AnchorPoints[currentAnchorPoint].Location;
                         currentPoint = new Point(currentKey.Item1, currentKey.Item2);
@@ -213,8 +214,17 @@ namespace RasterArc.Models
                         {
                             if (!line.IsChecked) // If a line is unchecked
                             {
-                                // Add the first segment to the list
                                 currentSegment = line;
+
+                                // Check the direction and swap if needed
+                                Point AnchorPointCheck = new Point(AnchorPoints[currentAnchorPoint].Location.Item1, AnchorPoints[currentAnchorPoint].Location.Item2);
+                                Point simplifiedEndPoint = new Point((int) (currentSegment.EndPoint.X / cellSize * 10), (int)(currentSegment.EndPoint.Y / cellSize * 10));
+                                if (simplifiedEndPoint.X == AnchorPointCheck.X && simplifiedEndPoint.Y == AnchorPointCheck.Y)
+                                { 
+                                    currentSegment.SwapDirection(); 
+                                }
+
+                                // Add the first segment to the list
                                 line.IsChecked = true;
                                 currentLine.Add(currentSegment);
                                 break;
@@ -223,15 +233,28 @@ namespace RasterArc.Models
 
                         int segmentCount = 2;
                         bool notACriticalPoint = true;
-                        while (notACriticalPoint)  // The next point is not a terminal point, anchor point, or intersection point (segmentCount == 2)
+                        while (notACriticalPoint)
                         {
+                            //bool remove = false;
+                            //(int, int) removeKey = (0, 0);
+
                             // Continue along the path, adding segments to the list of line segments
                             foreach (KeyValuePair<(int, int), List<LineSegment>> dItem in d)
                             {
+                                //if (dItem.Value.All(i => i.IsChecked == true)) 
+                                //{
+                                //    remove = true;
+                                //    removeKey = dItem.Key;
+                                //    break; 
+                                //}
+
+                                if (!notACriticalPoint) { break; }
                                 segmentCount = dItem.Value.Count;
 
-                                if (segmentCount == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment) && dItem.Key != currentKey)
+                                if (segmentCount == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment) 
+                                    && dItem.Key != currentKey)
                                 {
+                                    (int, int) temporaryKey = currentKey;
                                     currentKey = dItem.Key;
                                     currentPoint = new Point(currentKey.Item1, currentKey.Item2);
 
@@ -246,27 +269,31 @@ namespace RasterArc.Models
                                         dItem.Value[0].IsChecked = true;
                                     }
 
-                                    if (currentPoint == currentSegment.EndPoint) { currentSegment.SwapDirection(); }
+                                    Point simplifiedEndPoint = new Point((int)(currentSegment.EndPoint.X / cellSize * 10), (int)(currentSegment.EndPoint.Y / cellSize * 10));
+                                    if (currentPoint.X == simplifiedEndPoint.X && currentPoint.Y == simplifiedEndPoint.Y) 
+                                    { 
+                                        currentSegment.SwapDirection();
+                                    }
                                     currentLine.Add(currentSegment);
                                     continue;
                                 }
                                 else if (segmentCount != 2 && dItem.Key != currentKey)
                                 {
-                                    for (int i = 0; i < segmentCount; i++) // Check every segment
+                                    for (int i = 0; i < segmentCount; i++)
                                     {
                                         LineSegment segment = dItem.Value[i];
-                                        if ((segment == currentSegment)) // For the segment that shares the point.
+                                        if (segment == currentSegment)
                                         {
                                             currentKey = dItem.Key;
                                             currentList = dItem.Value;
+                                            notACriticalPoint = false;
                                             break;
                                         }
                                     }
-
-                                    notACriticalPoint = false;
-                                    break;
                                 }
                             }
+
+                            //if (remove) { d.Remove(removeKey); }
                         }
                         if (segmentCount == 1) // If the next point is a terminal point
                         {
