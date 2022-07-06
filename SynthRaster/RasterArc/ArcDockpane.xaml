@@ -49,10 +49,9 @@
 		<Label x:Name="lblWidthToPeak" Content="Peak Width" HorizontalAlignment="Left" Margin="190,120,0,0" VerticalAlignment="Top"/>
 		<TextBox x:Name="txtWidthToPeak" Text = "{Binding Path=Raster.WidthToPeak, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="190,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="64"/>
 
-		<!-- Combo Box for layer input -->
 		<StackPanel Grid.Row="0" Orientation="Vertical">
-			<Label x:Name="lblComboBox" Content="Select Layer:" HorizontalAlignment="Left" Margin="10,220,0,0" VerticalAlignment="Top" Width="119"/>
-			<ComboBox ItemsSource="{Binding LayersInMap}"  SelectedItem="{Binding SelectedLayer, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,0,0,0" VerticalAlignment="Top" Width="244"/>
+			<Label x:Name="lblLayerName" Content="Road Layer Name" HorizontalAlignment="Left" Margin="10,220,0,0" VerticalAlignment="Top" Width="119"/>
+			<TextBox x:Name="txtLayerName" Text = "{Binding Path=Raster.LayerName, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,0,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="244"/>
 		</StackPanel>
 
 		<Label x:Name="lblInflectionWidth" Content="Inflection Width" HorizontalAlignment="Left" Margin="10,170,0,0" VerticalAlignment="Top"/>

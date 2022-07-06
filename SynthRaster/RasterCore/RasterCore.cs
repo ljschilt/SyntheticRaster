@@ -118,38 +118,36 @@ namespace RasterCore
                     RCPoint rasterPoint = new Point(LeftXCoordinate + ((currentColumn + 0.5) * CellSize), BottomYCoordinate + (NumRows * CellSize) - ((currentRow + 0.5) * CellSize));
                     foreach (List<RCPoint> road in RoadNetwork)
                     {
-                        if (currentColumn == 485 && currentRow == 368) { int i = 0; }
-                        
                         double existingCellValue = RasterGrid[currentRow, currentColumn];
                         if (existingCellValue == int.Parse(NoDataValue)) { break; }
-                        
+
                         IReadOnlyList<StationAndOffset> allSOs = StationAndOffset.CreateSOList(rasterPoint, road);
 
                         StationAndOffset closestStationAndOffset = allSOs.OrderBy(so => Math.Abs(so.Offset)).FirstOrDefault();
-                        
+
                         if (FirstRoadList || closestStationAndOffset.Offset <= currentOffset)
                         {
                             currentOffset = closestStationAndOffset.Offset;
-                            FirstRoadList = false;
-                        }
 
-                        if (closestStationAndOffset.Offset <= RoadWidth)
-                        {
-                            RasterGrid[currentRow, currentColumn] = int.Parse(NoDataValue);
-                        }
-                        else
-                        {
-                            if (closestStationAndOffset != null && !closestStationAndOffset.ProjectsOnEndCap)
+                            if (closestStationAndOffset.Offset <= RoadWidth)
                             {
-                                double x = closestStationAndOffset.Offset;
-                                x -= widthToPeak;
-                                double xSquared = x * x;
-
-                                double probabilityOfDevelopment = ((aSquared * ProbDifference) /
-                                    ((xSquared + aSquared) * Math.Sqrt((xSquared / aSquared) + 1.0))) + baseProb;
-
-                                RasterGrid[currentRow, currentColumn] = probabilityOfDevelopment;
+                                RasterGrid[currentRow, currentColumn] = int.Parse(NoDataValue);
                             }
+                            else
+                            {
+                                if (closestStationAndOffset != null && !closestStationAndOffset.ProjectsOnEndCap)
+                                {
+                                    double x = closestStationAndOffset.Offset;
+                                    x -= widthToPeak;
+                                    double xSquared = x * x;
+
+                                    double probabilityOfDevelopment = (aSquared * ProbDifference / ((xSquared + aSquared) * Math.Sqrt((xSquared / aSquared) + 1.0))) + baseProb;
+
+                                    RasterGrid[currentRow, currentColumn] = probabilityOfDevelopment;
+                                }
+                            }
+
+                            FirstRoadList = false;
                         }
                     }
                 }
@@ -172,7 +170,7 @@ namespace RasterCore
             double bottomYCoordinate,
             string noDataValue = "-9999")
         {
-            var newRaster = new RasterCore
+            RasterCore newRaster = new RasterCore
             {
                 CellSize = cellSize,
                 NumColumns = numColumns,

@@ -20,7 +20,7 @@ namespace RasterArc.Models
         {
             List<LineSegment> Lines = new List<LineSegment>();
             FeatureLayer layer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>()
-                .FirstOrDefault(L => L.Name == "Bethel&WhiteEagleIntersection"); // BethelChurch
+                .FirstOrDefault(L => L.Name == layerName);
 
             if (!(layer.GetTable() is FeatureClass fc))
             {
@@ -235,19 +235,9 @@ namespace RasterArc.Models
                         bool notACriticalPoint = true;
                         while (notACriticalPoint)
                         {
-                            //bool remove = false;
-                            //(int, int) removeKey = (0, 0);
-
                             // Continue along the path, adding segments to the list of line segments
                             foreach (KeyValuePair<(int, int), List<LineSegment>> dItem in d)
                             {
-                                //if (dItem.Value.All(i => i.IsChecked == true)) 
-                                //{
-                                //    remove = true;
-                                //    removeKey = dItem.Key;
-                                //    break; 
-                                //}
-
                                 if (!notACriticalPoint) { break; }
                                 segmentCount = dItem.Value.Count;
 
