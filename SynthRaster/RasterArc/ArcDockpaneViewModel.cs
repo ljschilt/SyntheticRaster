@@ -2,6 +2,7 @@
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
 using RasterArc.Models;
+using System.Diagnostics;
 using System.Windows.Input;
 
 namespace RasterArc
@@ -30,14 +31,12 @@ namespace RasterArc
                     {
                         if (Raster.HandleExceptions().Equals("No exceptions"))
                         {
+                            //_ = MessageBox.Show("Inputs are valid. Close this dialog box to begin creating the raster file.");
                             Raster.CreateAndDisplayRaster();
-                            _ = MessageBox.Show("Inputs are valid. Close this dialog box to begin creating the raster file.");
                         }
-                        else
-                        {
-                            _ = MessageBox.Show(Raster.HandleExceptions());
-                        }
+                        else { _ = MessageBox.Show(Raster.HandleExceptions()); }
                     }, () => true);
+                    
                 }
                 return _displayRaster;
             }

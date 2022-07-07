@@ -7,6 +7,8 @@ using RasterCore;
 using System.IO;
 using System.Linq;
 using ArcGIS.Desktop.Editing;
+using System.Diagnostics;
+using ArcGIS.Desktop.Framework.Dialogs;
 
 namespace RasterArc.Models
 {
@@ -17,9 +19,9 @@ namespace RasterArc.Models
         private int _numRows;
         private double _leftXCoordinate;
         private double _bottomYCoordinate;
-        private double _a;
+        private double _inflectionWidth;
         private double _maxProb;
-        private double _baseProb;
+        private double _maxWidth;
         private double _widthToPeak;
         private double _roadWidth;
         private string _rasterOutputDirectory;
@@ -33,15 +35,14 @@ namespace RasterArc.Models
             _numRows = 598;
             _leftXCoordinate = 1277550.01;
             _bottomYCoordinate = 690050.02;
-            _a = 100;
+            _inflectionWidth = 100;
             _maxProb = 0.15;
-            _baseProb = -0.0005;
+            _maxWidth = 962.673;
             _widthToPeak = 300;
             _roadWidth = 50;
             _rasterOutputDirectory = @"C:\Users\lukes\OneDrive\Documents\Research Files\SyntheticRaster\SynthRaster\Raster Files";
             _rasterFilename = "TestRun.asc";
             _layerName = "Bethel&WhiteEagleIntersection";
-
         }
 
         public double CellSize { get { return _cellSize; } set { SetProperty(ref _cellSize, value, () => CellSize); } }
@@ -49,9 +50,9 @@ namespace RasterArc.Models
         public int NumRows { get { return _numRows; } set { SetProperty(ref _numRows, value, () => NumRows); } }
         public double LeftXCoordinate { get { return _leftXCoordinate; } set { SetProperty(ref _leftXCoordinate, value, () => LeftXCoordinate); } }
         public double BottomYCoordinate { get { return _bottomYCoordinate; } set { SetProperty(ref _bottomYCoordinate, value, () => BottomYCoordinate); } }
-        public double A { get { return _a; } set { SetProperty(ref _a, value, () => A); } }
+        public double InflectionWidth { get { return _inflectionWidth; } set { SetProperty(ref _inflectionWidth, value, () => InflectionWidth); } }
         public double MaxProb { get { return _maxProb; } set { SetProperty(ref _maxProb, value, () => MaxProb); } }
-        public double BaseProb { get { return _baseProb; } set { SetProperty(ref _baseProb, value, () => BaseProb); } }
+        public double MaxWidth { get { return _maxWidth; } set { SetProperty(ref _maxWidth, value, () => MaxWidth); } }
         public double WidthToPeak { get { return _widthToPeak; } set { SetProperty(ref _widthToPeak, value, () => WidthToPeak); } }
         public double RoadWidth { get { return _roadWidth; } set { SetProperty(ref _roadWidth, value, () => RoadWidth); } }
         public string RasterOutputDirectory { get { return _rasterOutputDirectory; } set { SetProperty(ref _rasterOutputDirectory, value, () => RasterOutputDirectory); } }
@@ -60,14 +61,16 @@ namespace RasterArc.Models
 
         public async void CreateAndDisplayRaster()
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
             StretchColorizerDefinition stretchColorizerDef = new StretchColorizerDefinition();
             await QueuedTask.Run(() =>
             {
                 GeometryReader geometryReader = new GeometryReader(CellSize, LayerName);
-                
                 List<List<RCPoint>> RoadNetwork = geometryReader.CreateRoadNetworkList();
+
                 RasterCore.RasterCore coreRas = RasterCore.RasterCore.Zeroes(CellSize, NumColumns, NumRows, LeftXCoordinate, BottomYCoordinate);
-                coreRas.ComputeParametricSurface(RoadNetwork, A, MaxProb, BaseProb, WidthToPeak, RoadWidth);
+                coreRas.ComputeParametricSurface(RoadNetwork, InflectionWidth, MaxProb, MaxWidth, WidthToPeak, RoadWidth);
                 coreRas.WriteToFile(RasterOutputDirectory, RasterFilename);
                 Map map = MapView.Active.Map;
                 string url = @RasterOutputDirectory + @"\" + @RasterFilename;
@@ -75,6 +78,11 @@ namespace RasterArc.Models
                 RasterLayer rasterLayerfromURL =
                   LayerFactory.Instance.CreateRasterLayer(uri, map, 0, RasterFilename, stretchColorizerDef) as RasterLayer;
             });
+            stopwatch.Stop();
+
+            double elapsedSeconds = stopwatch.ElapsedMilliseconds / 1000.00;
+            string stopWatchMessage = "Elapsed Time is " + elapsedSeconds + " seconds.";
+            _ = MessageBox.Show(stopWatchMessage);
         }
 
         public string HandleExceptions()
@@ -98,6 +106,12 @@ namespace RasterArc.Models
                 if (exception) { exceptionString += "\n"; }
                 exception = true;
                 exceptionString += "Invalid number of rows. The number of rows must be a non-zero positive integer.";
+            }
+            if (MaxWidth <= WidthToPeak)
+            {
+                if (exception) { exceptionString += "\n"; }
+                exception = true;
+                exceptionString += "Invalid max width. Max width must be greater than the width to peak.";
             }
             if (RoadWidth <= 0)
             {

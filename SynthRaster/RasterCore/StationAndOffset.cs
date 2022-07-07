@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace RasterCore
 {
-    class StationAndOffset : Vector
+    internal class StationAndOffset : Vector
     {
         public double Station { get; private set; }
         public double Offset { get; private set; }
@@ -23,7 +23,6 @@ namespace RasterCore
             double angle = Math.Acos(DotProduct(rasterVector, roadVector) / (rasterVectorLength * roadSegmentLength));
 
             // Step 3: Calculate the offset and station.
-            Offset = 0;
             Station = CalculateStation(firstSegmentPoint, RoadPoints);
             if (angle <= (Math.PI / 2))
             {
@@ -48,25 +47,15 @@ namespace RasterCore
                 if (Station < beginStation)
                 {
                     Offset = CalculateDistance(rasterPoint, RoadPoints[firstSegmentPoint]);
-
-                    if (firstSegmentPoint == 0)
-                    {
-                        ProjectsOnEndCap = true;
-                    }
+                    if (firstSegmentPoint == 0) { ProjectsOnEndCap = true; }
                 }
                 else
                 {
                     Offset = CalculateDistance(rasterPoint, RoadPoints[firstSegmentPoint + 1]);
-
-                    if (firstSegmentPoint == RoadPoints.Count - 2)
-                    {
-                        ProjectsOnEndCap = true;
-                    }
+                    if (firstSegmentPoint == RoadPoints.Count - 2) { ProjectsOnEndCap = true; }
                 }
             }
-
-            
-    }
+        }
 
         public double CalculateDistance(RCPoint point1, RCPoint point2)
         {
@@ -76,21 +65,19 @@ namespace RasterCore
         public double CalculateStation(int RoadPoint, List<RCPoint> RoadPoints)
         {
             double station = 0;
-
             for (int segmentCounter = 0; segmentCounter < RoadPoint; segmentCounter++)
             {
                 station += CalculateDistance(RoadPoints[segmentCounter], RoadPoints[segmentCounter + 1]);
             }
-
             return station;
         }
 
         public static IReadOnlyList<StationAndOffset> CreateSOList(RCPoint rasterPoint, List<RCPoint> RoadPoints)
         {
-            var soList = new List<StationAndOffset>();
+            List<StationAndOffset> soList = new List<StationAndOffset>();
             for (int i = 0; i < RoadPoints.Count - 1; i++)
             {
-                var aSO = new StationAndOffset(rasterPoint, i, RoadPoints);
+                StationAndOffset aSO = new StationAndOffset(rasterPoint, i, RoadPoints);
                 soList.Add(aSO);
             }
             return soList;

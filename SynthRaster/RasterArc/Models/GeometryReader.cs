@@ -27,7 +27,7 @@ namespace RasterArc.Models
                 return;
             }
 
-             using (RowCursor cursor = fc.Search())
+            using (RowCursor cursor = fc.Search())
             {
                 int polylineCounter = 0;
                 int segmentCounter = 0;
@@ -82,30 +82,18 @@ namespace RasterArc.Models
                 beginX = (int)(aLine.BeginPoint.X / cellSize * 10);
                 beginY = (int)(aLine.BeginPoint.Y / cellSize * 10);
                 key = (beginX, beginY);
-                if (!d.ContainsKey(key))
-                {
-                    d[key] = new List<LineSegment>();
-                }
+                if (!d.ContainsKey(key)) { d[key] = new List<LineSegment>(); }
 
                 bool alreadyInThere = Convert.ToBoolean(d[key].Where(item => item.UniqueString == aLine.UniqueString).Count());
-                if(!alreadyInThere)
-                {
-                    d[key].Add(aLine);
-                }
+                if(!alreadyInThere) { d[key].Add(aLine); }
 
                 endX = (int)(aLine.EndPoint.X / cellSize * 10);
                 endY = (int)(aLine.EndPoint.Y / cellSize * 10);
                 key = (endX, endY);
-                if (!d.ContainsKey(key))
-                {
-                    d[key] = new List<LineSegment>();
-                }
+                if (!d.ContainsKey(key)) { d[key] = new List<LineSegment>(); }
 
                 alreadyInThere = Convert.ToBoolean(d[key].Where(item => item.UniqueString == aLine.UniqueString).Count());
-                if (!alreadyInThere)
-                {
-                    d[key].Add(aLine);
-                }
+                if (!alreadyInThere) { d[key].Add(aLine); }
             }
 
             // Start at a terminal point by declaring a first list of line segments and a line segment.
@@ -184,7 +172,7 @@ namespace RasterArc.Models
             RoadNetwork.Add(currentLine);
 
             // If the previous line did not hit an intersection, then let the fun begin!
-            if (hitIntersection) 
+            if (hitIntersection)
             {
                 // Set the first anchor point
                 AnchorPoints = new List<AnchorPoint>();
@@ -220,7 +208,7 @@ namespace RasterArc.Models
                                 Point AnchorPointCheck = new Point(AnchorPoints[currentAnchorPoint].Location.Item1, AnchorPoints[currentAnchorPoint].Location.Item2);
                                 Point simplifiedEndPoint = new Point((int) (currentSegment.EndPoint.X / cellSize * 10), (int)(currentSegment.EndPoint.Y / cellSize * 10));
                                 if (simplifiedEndPoint.X == AnchorPointCheck.X && simplifiedEndPoint.Y == AnchorPointCheck.Y)
-                                { 
+                                {
                                     currentSegment.SwapDirection(); 
                                 }
 
@@ -241,7 +229,7 @@ namespace RasterArc.Models
                                 if (!notACriticalPoint) { break; }
                                 segmentCount = dItem.Value.Count;
 
-                                if (segmentCount == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment) 
+                                if (segmentCount == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment)
                                     && dItem.Key != currentKey)
                                 {
                                     (int, int) temporaryKey = currentKey;
@@ -260,8 +248,8 @@ namespace RasterArc.Models
                                     }
 
                                     Point simplifiedEndPoint = new Point((int)(currentSegment.EndPoint.X / cellSize * 10), (int)(currentSegment.EndPoint.Y / cellSize * 10));
-                                    if (currentPoint.X == simplifiedEndPoint.X && currentPoint.Y == simplifiedEndPoint.Y) 
-                                    { 
+                                    if (currentPoint.X == simplifiedEndPoint.X && currentPoint.Y == simplifiedEndPoint.Y)
+                                    {
                                         currentSegment.SwapDirection();
                                     }
                                     currentLine.Add(currentSegment);
@@ -282,8 +270,6 @@ namespace RasterArc.Models
                                     }
                                 }
                             }
-
-                            //if (remove) { d.Remove(removeKey); }
                         }
                         if (segmentCount == 1) // If the next point is a terminal point
                         {
@@ -299,13 +285,15 @@ namespace RasterArc.Models
                             RoadNetwork.Add(currentLine);
 
                             // Identify the anchor point that was hit
-                            AnchorPoint hitAnchorPoint = AnchorPoints[CheckAnchorPoint(currentKey)];
                             // Subtract one from unchecked branches for both the current anchor point and the anchor point hit.
                             AnchorPoints[currentAnchorPoint].UncheckedBranches -= 1;
-                            hitAnchorPoint.UncheckedBranches -= 1;
+                            AnchorPoints[CheckAnchorPoint(currentKey)].UncheckedBranches -= 1;
                         }
                         else // The next point is an intersection point
                         {
+                            // Add the list to the road network.
+                            RoadNetwork.Add(currentLine);
+
                             // Create a new anchor point
                             AnchorPoint newAnchorPoint = new AnchorPoint(currentKey, currentList);
                             AnchorPoints.Add(newAnchorPoint);
@@ -341,7 +329,7 @@ namespace RasterArc.Models
 
                 RoadNetworkPoints.Add(RoadPoints);
             }
-            
+
             return RoadNetworkPoints;
         }
     }

@@ -5,7 +5,6 @@ using System.Linq;
 
 namespace RasterCore
 {
-
     public class RasterCore
     {
         private double CellSize { get; set; }
@@ -16,9 +15,7 @@ namespace RasterCore
         private string NoDataValue { get; set; }
         private double[,] RasterGrid { get; set; }
 
-        protected RasterCore()
-        {
-        }
+        protected RasterCore() { }
 
         public RasterCore(string PathToOpen)
         {
@@ -37,27 +34,22 @@ namespace RasterCore
                 while (true)
                 {
                     line = sr.ReadLine();
-                    if (line == null) break;
-                    var lineList = line.Split(' ');
+                    if (line == null) { break; }
+                    string[] lineList = line.Split(' ');
                     rowCounter++;
                     int columnCounter = -1;
 
-                    foreach (var entry in lineList)
+                    foreach (string entry in lineList)
                     {
                         columnCounter++;
-                        if (entry == this.NoDataValue)
+                        if (entry == NoDataValue)
                         {
                             RasterGrid[rowCounter, columnCounter] = double.NaN;
                         }
                         else
                         {
-                            try
-                            {
-                                RasterGrid[rowCounter, columnCounter] = double.Parse(entry);
-                            }
-                            catch
-                            {
-                            }
+                            try { RasterGrid[rowCounter, columnCounter] = double.Parse(entry); }
+                            catch { }
                         }
                     }
                 }
@@ -69,7 +61,7 @@ namespace RasterCore
         {
             try
             {
-                var filePath = PathToWriteTo + @"\" + fileName;
+                string filePath = PathToWriteTo + @"\" + fileName;
 
                 using (StreamWriter writer = new StreamWriter(filePath))
                 {
@@ -84,7 +76,7 @@ namespace RasterCore
                     {
                         for (int currentColumn = 0; currentColumn < NumColumns; currentColumn++)
                         {
-                            if (this.RasterGrid[currentRow, currentColumn] == double.NaN)
+                            if (RasterGrid[currentRow, currentColumn] == double.NaN)
                             {
                                 writer.Write(NoDataValue);
                             }
@@ -99,14 +91,16 @@ namespace RasterCore
                     writer.Flush();
                 }
             }
-            catch
-            {
-            }
+            catch { }
         }
 
-        public void ComputeParametricSurface(List<List<RCPoint>> RoadNetwork, double a, double maxProb, double baseProb, double widthToPeak, double RoadWidth)
+        public void ComputeParametricSurface(List<List<RCPoint>> RoadNetwork, double inflectionWidth, double maxProb, double maxWidth, double widthToPeak, double RoadWidth)
         {
-            double aSquared = a * a;
+            double inflectionWidthSquared = inflectionWidth * inflectionWidth;
+            double maxWidthSquared = Math.Pow(maxWidth - widthToPeak, 2);
+            double baseProb = -1.0 * inflectionWidthSquared * maxProb /
+                ((inflectionWidthSquared + maxWidthSquared) * Math.Sqrt(1.0 + (maxWidthSquared / inflectionWidthSquared)));
+
             double ProbDifference = maxProb - baseProb;
 
             for (int currentRow = 0; currentRow < NumRows; currentRow++)
@@ -141,7 +135,7 @@ namespace RasterCore
                                     x -= widthToPeak;
                                     double xSquared = x * x;
 
-                                    double probabilityOfDevelopment = (aSquared * ProbDifference / ((xSquared + aSquared) * Math.Sqrt((xSquared / aSquared) + 1.0))) + baseProb;
+                                    double probabilityOfDevelopment = (inflectionWidthSquared * ProbDifference / ((xSquared + inflectionWidthSquared) * Math.Sqrt((xSquared / inflectionWidthSquared) + 1.0))) + baseProb;
 
                                     RasterGrid[currentRow, currentColumn] = probabilityOfDevelopment;
                                 }
