@@ -15,6 +15,11 @@ namespace RasterCore
         private string NoDataValue { get; set; }
         private double[,] RasterGrid { get; set; }
 
+        private Func<double, double, double, double> SecperbolaFunc =
+            (a, Pm, x) => (a * a * Pm /
+                ((x * x + a * a) * Math.Sqrt(((x * x) / (a * a)) + 1.0)));
+
+
         protected RasterCore() { }
 
         public RasterCore(string PathToOpen)
@@ -94,9 +99,14 @@ namespace RasterCore
             catch { }
         }
 
-        public void ComputeParametricSurface(List<List<RCPoint>> RoadNetwork, double inflectionWidth, double maxProb, double maxWidth, double widthToPeak, double RoadWidth)
+        public void ComputeParametricSurface(List<List<RCPoint>> RoadNetwork, double inflectionWidth, double maxProb, double maxWidth, double widthToPeak, double RoadWidth, 
+            Func<double, double, double, double> theFunc = null)
         {
-            double inflectionWidthSquared = inflectionWidth * inflectionWidth;
+            var theFunction = theFunc;
+            if (theFunction == null)
+                theFunction = SecperbolaFunc;
+            double a = inflectionWidth;
+            double inflectionWidthSquared = a * a;
             double maxWidthSquared = Math.Pow(maxWidth - widthToPeak, 2);
             double baseProb = -1.0 * inflectionWidthSquared * maxProb /
                 ((inflectionWidthSquared + maxWidthSquared) * Math.Sqrt(1.0 + (maxWidthSquared / inflectionWidthSquared)));
@@ -129,13 +139,16 @@ namespace RasterCore
                             }
                             else
                             {
-                                if (closestStationAndOffset != null && !closestStationAndOffset.ProjectsOnEndCap)
+                                if (!closestStationAndOffset.ProjectsOnEndCap)
                                 {
                                     double x = closestStationAndOffset.Offset;
                                     x -= widthToPeak;
                                     double xSquared = x * x;
 
-                                    double probabilityOfDevelopment = (inflectionWidthSquared * ProbDifference / ((xSquared + inflectionWidthSquared) * Math.Sqrt((xSquared / inflectionWidthSquared) + 1.0))) + baseProb;
+                                    double probabilityOfDevelopment;
+                                     probabilityOfDevelopment =
+                                        theFunction(a, maxProb, x)
+                                        + baseProb;
 
                                     RasterGrid[currentRow, currentColumn] = probabilityOfDevelopment;
                                 }
