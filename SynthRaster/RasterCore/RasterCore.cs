@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace RasterCore
 {
@@ -113,13 +114,16 @@ namespace RasterCore
 
             double ProbDifference = maxProb - baseProb;
 
-            for (int currentRow = 0; currentRow < NumRows; currentRow++)
+            Parallel.For(0, NumRows, currentRow => 
+            //for (int currentRow = 0; currentRow < NumRows; currentRow++)
             {
                 for (int currentColumn = 0; currentColumn < NumColumns; currentColumn++)
                 {
                     double currentOffset = 0;
                     bool FirstRoadList = true;
-                    RCPoint rasterPoint = new Point(LeftXCoordinate + ((currentColumn + 0.5) * CellSize), BottomYCoordinate + (NumRows * CellSize) - ((currentRow + 0.5) * CellSize));
+                    RCPoint rasterPoint = new Point(
+                        LeftXCoordinate + ((currentColumn + 0.5) * CellSize), 
+                        BottomYCoordinate + (NumRows * CellSize) - ((currentRow + 0.5) * CellSize));
                     foreach (List<RCPoint> road in RoadNetwork)
                     {
                         double existingCellValue = RasterGrid[currentRow, currentColumn];
@@ -157,8 +161,9 @@ namespace RasterCore
                             FirstRoadList = false;
                         }
                     }
+                    //);
                 }
-            }
+            } );
 
             for (int currentRow = 0; currentRow < NumRows; currentRow++)
             {
