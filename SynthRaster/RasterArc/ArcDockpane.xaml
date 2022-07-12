@@ -65,7 +65,7 @@
 		<TextBox x:Name="txtRasterOutputDirectory" Text = "{Binding Path=Raster.RasterOutputDirectory, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="150,296,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
 
 		<StackPanel Grid.Row="1" Margin="10" HorizontalAlignment="Center">
-			<Button Command="{Binding DisplayRaster}" Content="Display Raster" />
+			<Button Command="{Binding DisplayRaster}" Content="Generate Raster" />
 		</StackPanel>
 			
 	</Grid>

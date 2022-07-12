@@ -8,7 +8,7 @@ namespace RasterCore
 {
     public class AnchorPoint
     {
-        public (int, int) Location { get; set; }
+        public (int X, int Y) Location { get; set; }
         public List<LineSegment> IntersectingLines { get; set; }
         public double UncheckedBranches { get; set; }
 

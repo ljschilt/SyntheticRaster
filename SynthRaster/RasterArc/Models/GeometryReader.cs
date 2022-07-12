@@ -16,7 +16,7 @@ namespace RasterArc.Models
 
         public List<List<LineSegment>> RoadNetwork { get; private set; }
 
-        public GeometryReader(double cellSize, String layerName)
+        public GeometryReader(double cellSize, string layerName)
         {
             List<LineSegment> Lines = new List<LineSegment>();
             FeatureLayer layer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>()
@@ -68,13 +68,13 @@ namespace RasterArc.Models
             RoadNetwork = new List<List<LineSegment>>();
 
             // Create the dictionary
-            Dictionary<(int, int), List<LineSegment>> d = new Dictionary<(int, int), List<LineSegment>>();
+            Dictionary<(int X, int Y), List<LineSegment>> d = new Dictionary<(int X, int Y), List<LineSegment>>();
 
             int beginX;
             int beginY;
             int endX;
             int endY;
-            (int, int) key;
+            (int X, int Y) key;
 
             // Populate the dictionary
             foreach (LineSegment aLine in Lines)
@@ -99,9 +99,9 @@ namespace RasterArc.Models
             // Start at a terminal point by declaring a first list of line segments and a line segment.
             List<LineSegment> currentLine = new List<LineSegment>();
             LineSegment currentSegment = new LineSegment(new Point(0, 0), new Point(0, 0));
-            (int, int) currentKey = (0, 0);
+            (int X, int Y) currentKey = (0, 0);
 
-            foreach (KeyValuePair<(int, int), List<LineSegment>> dItem in d)
+            foreach (KeyValuePair<(int X, int Y), List<LineSegment>> dItem in d)
             {
                 if (dItem.Value.Count == 1)
                 {
@@ -112,7 +112,7 @@ namespace RasterArc.Models
                 }
             }
 
-            Point currentPoint = new Point(currentKey.Item1, currentKey.Item2);
+            Point currentPoint = new Point(currentKey.X, currentKey.Y);
             if (currentPoint == currentSegment.EndPoint) { currentSegment.SwapDirection(); }
             currentLine.Add(currentSegment);
             List<LineSegment> currentList = new List<LineSegment>();
@@ -131,7 +131,7 @@ namespace RasterArc.Models
                     if (segmentCount == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment) && dItem.Key != currentKey)
                     {
                         currentKey = dItem.Key;
-                        currentPoint = new Point(currentKey.Item1, currentKey.Item2);
+                        currentPoint = new Point(currentKey.X, currentKey.Y);
 
                         if (currentSegment == dItem.Value[0])
                         {
@@ -159,7 +159,7 @@ namespace RasterArc.Models
                             if (segment == currentSegment) // For the segment that shares the point.
                             {
                                 currentKey = dItem.Key;
-                                currentPoint = new Point(currentKey.Item1, currentKey.Item2);
+                                currentPoint = new Point(currentKey.X, currentKey.Y);
                                 currentList = dItem.Value;
                                 hitIntersection = true;
                                 break;
@@ -195,7 +195,7 @@ namespace RasterArc.Models
                         // Create a new list of line segments for the new branch. Reset the location to be the current anchor point.
                         currentLine = new List<LineSegment>();
                         currentKey = AnchorPoints[currentAnchorPoint].Location;
-                        currentPoint = new Point(currentKey.Item1, currentKey.Item2);
+                        currentPoint = new Point(currentKey.X, currentKey.Y);
 
                         // Pick an unchecked branch
                         foreach (LineSegment line in AnchorPoints[currentAnchorPoint].IntersectingLines)
@@ -205,7 +205,7 @@ namespace RasterArc.Models
                                 currentSegment = line;
 
                                 // Check the direction and swap if needed
-                                Point AnchorPointCheck = new Point(AnchorPoints[currentAnchorPoint].Location.Item1, AnchorPoints[currentAnchorPoint].Location.Item2);
+                                Point AnchorPointCheck = new Point(AnchorPoints[currentAnchorPoint].Location.X, AnchorPoints[currentAnchorPoint].Location.Y);
                                 Point simplifiedEndPoint = new Point((int) (currentSegment.EndPoint.X / cellSize * 10), (int)(currentSegment.EndPoint.Y / cellSize * 10));
                                 if (simplifiedEndPoint.X == AnchorPointCheck.X && simplifiedEndPoint.Y == AnchorPointCheck.Y)
                                 {
@@ -229,12 +229,10 @@ namespace RasterArc.Models
                                 if (!notACriticalPoint) { break; }
                                 segmentCount = dItem.Value.Count;
 
-                                if (segmentCount == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment)
-                                    && dItem.Key != currentKey)
+                                if (segmentCount == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment) && dItem.Key != currentKey)
                                 {
-                                    (int, int) temporaryKey = currentKey;
                                     currentKey = dItem.Key;
-                                    currentPoint = new Point(currentKey.Item1, currentKey.Item2);
+                                    currentPoint = new Point(currentKey.X, currentKey.Y);
 
                                     if (currentSegment == dItem.Value[0])
                                     {
@@ -271,6 +269,7 @@ namespace RasterArc.Models
                                 }
                             }
                         }
+
                         if (segmentCount == 1) // If the next point is a terminal point
                         {
                             // Add the list to the road network.

@@ -15,10 +15,10 @@ namespace RasterCore
         private string NoDataValue { get; set; }
         private double[,] RasterGrid { get; set; }
 
+        // Computation Functions: Calculates the values for the given raster point
         private Func<double, double, double, double> SecperbolaFunc =
             (a, Pm, x) => (a * a * Pm /
                 ((x * x + a * a) * Math.Sqrt(((x * x) / (a * a)) + 1.0)));
-
 
         protected RasterCore() { }
 
@@ -99,12 +99,11 @@ namespace RasterCore
             catch { }
         }
 
-        public void ComputeParametricSurface(List<List<RCPoint>> RoadNetwork, double inflectionWidth, double maxProb, double maxWidth, double widthToPeak, double RoadWidth, 
-            Func<double, double, double, double> theFunc = null)
+        public void ComputeParametricSurface(List<List<RCPoint>> RoadNetwork, double inflectionWidth, double maxProb, double maxWidth, double widthToPeak, double RoadWidth, Func<double, double, double, double> theFunc = null)
         {
-            var theFunction = theFunc;
-            if (theFunction == null)
-                theFunction = SecperbolaFunc;
+            Func<double, double, double, double> theFunction = theFunc;
+            if (theFunction == null) { theFunction = SecperbolaFunc; }
+
             double a = inflectionWidth;
             double inflectionWidthSquared = a * a;
             double maxWidthSquared = Math.Pow(maxWidth - widthToPeak, 2);
@@ -137,21 +136,18 @@ namespace RasterCore
                             {
                                 RasterGrid[currentRow, currentColumn] = int.Parse(NoDataValue);
                             }
-                            else
+                            else if (!closestStationAndOffset.ProjectsOnEndCap)
                             {
-                                if (!closestStationAndOffset.ProjectsOnEndCap)
-                                {
-                                    double x = closestStationAndOffset.Offset;
-                                    x -= widthToPeak;
-                                    double xSquared = x * x;
+                                double x = closestStationAndOffset.Offset;
+                                x -= widthToPeak;
+                                double xSquared = x * x;
 
-                                    double probabilityOfDevelopment;
-                                     probabilityOfDevelopment =
-                                        theFunction(a, maxProb, x)
-                                        + baseProb;
+                                double probabilityOfDevelopment;
+                                probabilityOfDevelopment =
+                                   theFunction(a, maxProb - baseProb, x)
+                                   + baseProb;
 
-                                    RasterGrid[currentRow, currentColumn] = probabilityOfDevelopment;
-                                }
+                                RasterGrid[currentRow, currentColumn] = probabilityOfDevelopment;
                             }
 
                             FirstRoadList = false;
