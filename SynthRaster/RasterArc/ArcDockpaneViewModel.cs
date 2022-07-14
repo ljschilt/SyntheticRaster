@@ -31,7 +31,6 @@ namespace RasterArc
                     {
                         if (Raster.HandleExceptions().Equals("No exceptions"))
                         {
-                            //_ = MessageBox.Show("Inputs are valid. Close this dialog box to begin creating the raster file.");
                             Raster.CreateAndDisplayRaster();
                         }
                         else { _ = MessageBox.Show(Raster.HandleExceptions()); }

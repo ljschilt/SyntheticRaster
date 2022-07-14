@@ -102,6 +102,12 @@ namespace RasterCore
 
         public void ComputeParametricSurface(List<List<RCPoint>> RoadNetwork, double inflectionWidth, double maxProb, double maxWidth, double widthToPeak, double RoadWidth, Func<double, double, double, double> theFunc = null)
         {
+            //int pointCounter = 0;
+            //foreach (List<RCPoint> Reach in RoadNetwork)
+            //{
+            //    pointCounter += Reach.Count;
+            //}
+
             Func<double, double, double, double> theFunction = theFunc;
             if (theFunction == null) { theFunction = SecperbolaFunc; }
 
@@ -110,11 +116,10 @@ namespace RasterCore
             double maxWidthSquared = Math.Pow(maxWidth - widthToPeak, 2);
             double baseProb = -1.0 * inflectionWidthSquared * maxProb /
                 ((inflectionWidthSquared + maxWidthSquared) * Math.Sqrt(1.0 + (maxWidthSquared / inflectionWidthSquared)));
-
             double ProbDifference = maxProb - baseProb;
 
             Parallel.For(0, NumRows, currentRow => 
-            //for (int currentRow = 0; currentRow < NumRows; currentRow++)
+            //for (int currentRow = 0; currentRow < NumRows; currentRow++) //
             {
                 for (int currentColumn = 0; currentColumn < NumColumns; currentColumn++)
                 {
@@ -123,6 +128,7 @@ namespace RasterCore
                     RCPoint rasterPoint = new Point(
                         LeftXCoordinate + ((currentColumn + 0.5) * CellSize), 
                         BottomYCoordinate + (NumRows * CellSize) - ((currentRow + 0.5) * CellSize));
+                    //progressCounter++;
                     foreach (List<RCPoint> road in RoadNetwork)
                     {
                         double existingCellValue = RasterGrid[currentRow, currentColumn];
@@ -157,9 +163,8 @@ namespace RasterCore
                             FirstRoadList = false;
                         }
                     }
-                    //);
                 }
-            } );
+            } ); //
 
             for (int currentRow = 0; currentRow < NumRows; currentRow++)
             {
@@ -170,13 +175,7 @@ namespace RasterCore
             }
         }
 
-        public static RasterCore Zeroes(
-            double cellSize,
-            int numColumns,
-            int numRows,
-            double leftXCoordinate,
-            double bottomYCoordinate,
-            string noDataValue = "-9999")
+        public static RasterCore Zeroes(double cellSize, int numColumns, int numRows, double leftXCoordinate, double bottomYCoordinate, string noDataValue = "-9999")
         {
             RasterCore newRaster = new RasterCore
             {
@@ -204,13 +203,11 @@ namespace RasterCore
     {
         public double X { get; set; }
         public double Y { get; set; }
-        public double Z { get; set; }
 
-        public Point(double X, double Y, double Z = 0)
+        public Point(double X, double Y)
         {
             this.X = X;
             this.Y = Y;
-            this.Z = Z;
         }
     }
 }

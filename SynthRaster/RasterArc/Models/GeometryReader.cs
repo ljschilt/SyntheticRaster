@@ -68,27 +68,27 @@ namespace RasterArc.Models
             RoadNetwork = new List<List<LineSegment>>();
 
             // Create the dictionary
-            Dictionary<(int X, int Y), List<LineSegment>> d = new Dictionary<(int X, int Y), List<LineSegment>>();
+            Dictionary<(double X, double Y), List<LineSegment>> d = new Dictionary<(double X, double Y), List<LineSegment>>();
 
-            int beginX;
-            int beginY;
-            int endX;
-            int endY;
-            (int X, int Y) key;
+            double beginX;
+            double beginY;
+            double endX;
+            double endY;
+            (double X, double Y) key;
 
             // Populate the dictionary
             foreach (LineSegment aLine in Lines)
             {
-                beginX = (int)(aLine.BeginPoint.X / cellSize * 10);
-                beginY = (int)(aLine.BeginPoint.Y / cellSize * 10);
+                beginX = (double)(aLine.BeginPoint.X / cellSize * 100);
+                beginY = (double)(aLine.BeginPoint.Y / cellSize * 100);
                 key = (beginX, beginY);
                 if (!d.ContainsKey(key)) { d[key] = new List<LineSegment>(); }
 
                 bool alreadyInThere = Convert.ToBoolean(d[key].Where(item => item.UniqueString == aLine.UniqueString).Count());
                 if(!alreadyInThere) { d[key].Add(aLine); }
 
-                endX = (int)(aLine.EndPoint.X / cellSize * 10);
-                endY = (int)(aLine.EndPoint.Y / cellSize * 10);
+                endX = (double)(aLine.EndPoint.X / cellSize * 100);
+                endY = (double)(aLine.EndPoint.Y / cellSize * 100);
                 key = (endX, endY);
                 if (!d.ContainsKey(key)) { d[key] = new List<LineSegment>(); }
 
@@ -99,9 +99,9 @@ namespace RasterArc.Models
             // Start at a terminal point by declaring a first list of line segments and a line segment.
             List<LineSegment> currentLine = new List<LineSegment>();
             LineSegment currentSegment = new LineSegment(new Point(0, 0), new Point(0, 0));
-            (int X, int Y) currentKey = (0, 0);
+            (double X, double Y) currentKey = (0, 0);
 
-            foreach (KeyValuePair<(int X, int Y), List<LineSegment>> dItem in d)
+            foreach (KeyValuePair<(double X, double Y), List<LineSegment>> dItem in d)
             {
                 if (dItem.Value.Count == 1)
                 {
@@ -122,7 +122,7 @@ namespace RasterArc.Models
             bool hitIntersection = false;
             for (int counter = 1; counter < Lines.Count; counter++)
             {
-                foreach (KeyValuePair<(int, int), List<LineSegment>> dItem in d)
+                foreach (KeyValuePair<(double, double), List<LineSegment>> dItem in d)
                 {
                     if (hitIntersection) { break; }
 
@@ -192,28 +192,33 @@ namespace RasterArc.Models
                     }
                     else
                     {
-                        // Create a new list of line segments for the new branch. Reset the location to be the current anchor point.
-                        currentLine = new List<LineSegment>();
+                        // Reset the location to be the current anchor point.
                         currentKey = AnchorPoints[currentAnchorPoint].Location;
                         currentPoint = new Point(currentKey.X, currentKey.Y);
 
                         // Pick an unchecked branch
-                        foreach (LineSegment line in AnchorPoints[currentAnchorPoint].IntersectingLines)
+
+                        foreach (LineSegment segment in AnchorPoints[currentAnchorPoint].IntersectingLines)
                         {
-                            if (!line.IsChecked) // If a line is unchecked
+                            //(int X, int Y) = ((int)(segment.BeginPoint.X / cellSize * 100), (int)(segment.BeginPoint.Y / cellSize * 100));
+                            //(int X, int Y) endKey = ((int)(segment.EndPoint.X / cellSize * 100), (int)(segment.EndPoint.Y / cellSize * 100));
+                            //  && !(X == endKey.X && Y == endKey.Y)
+                            if (!segment.IsChecked)
                             {
-                                currentSegment = line;
+                                currentSegment = segment;
 
                                 // Check the direction and swap if needed
                                 Point AnchorPointCheck = new Point(AnchorPoints[currentAnchorPoint].Location.X, AnchorPoints[currentAnchorPoint].Location.Y);
-                                Point simplifiedEndPoint = new Point((int) (currentSegment.EndPoint.X / cellSize * 10), (int)(currentSegment.EndPoint.Y / cellSize * 10));
+                                Point simplifiedEndPoint = new Point((double) (currentSegment.EndPoint.X / cellSize * 100), (double)(currentSegment.EndPoint.Y / cellSize * 100));
                                 if (simplifiedEndPoint.X == AnchorPointCheck.X && simplifiedEndPoint.Y == AnchorPointCheck.Y)
                                 {
-                                    currentSegment.SwapDirection(); 
+                                    currentSegment.SwapDirection();
                                 }
 
+                                // Create a new list of line segments for the new branch.
+                                currentLine = new List<LineSegment>();
+                                segment.IsChecked = true;
                                 // Add the first segment to the list
-                                line.IsChecked = true;
                                 currentLine.Add(currentSegment);
                                 break;
                             }
@@ -224,12 +229,21 @@ namespace RasterArc.Models
                         while (notACriticalPoint)
                         {
                             // Continue along the path, adding segments to the list of line segments
-                            foreach (KeyValuePair<(int, int), List<LineSegment>> dItem in d)
+                            int iterationCounter = 0;
+                            foreach (KeyValuePair<(double, double), List<LineSegment>> dItem in d)
                             {
                                 if (!notACriticalPoint) { break; }
+                                if (iterationCounter == d.Count)
+                                {
+                                    throw new Exception("Error: System could not process the " +
+                                        "intersection at" + currentKey.X + ", " + currentKey.Y + ".");
+                                }
+                                iterationCounter++;
+
                                 segmentCount = dItem.Value.Count;
 
-                                if (segmentCount == 2 && (dItem.Value[0] == currentSegment || dItem.Value[1] == currentSegment) && dItem.Key != currentKey)
+                                if (segmentCount == 2 && (dItem.Value[0] == currentSegment ||
+                                    dItem.Value[1] == currentSegment) && dItem.Key != currentKey)
                                 {
                                     currentKey = dItem.Key;
                                     currentPoint = new Point(currentKey.X, currentKey.Y);
@@ -245,7 +259,7 @@ namespace RasterArc.Models
                                         dItem.Value[0].IsChecked = true;
                                     }
 
-                                    Point simplifiedEndPoint = new Point((int)(currentSegment.EndPoint.X / cellSize * 10), (int)(currentSegment.EndPoint.Y / cellSize * 10));
+                                    Point simplifiedEndPoint = new Point((double)(currentSegment.EndPoint.X / cellSize * 100), (double)(currentSegment.EndPoint.Y / cellSize * 100));
                                     if (currentPoint.X == simplifiedEndPoint.X && currentPoint.Y == simplifiedEndPoint.Y)
                                     {
                                         currentSegment.SwapDirection();
@@ -305,7 +319,7 @@ namespace RasterArc.Models
             }
         }
 
-        public int CheckAnchorPoint((int, int) key)
+        public int CheckAnchorPoint((double, double) key)
         {
             return AnchorPoints.FindIndex(a => a.OnLocation(key));
         }

@@ -39,8 +39,8 @@
 		<TextBox x:Name="txtNumRows" Text = "{Binding Path=Raster.NumRows, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="190,46,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="64"/>
 
 		<Label x:Name="lblBottomLeftX" Content="Bottom Left Corner Coordinates" HorizontalAlignment="Left" Margin="10,70,0,0" VerticalAlignment="Top"/>
-		<TextBox x:Name="txtLeftX" Text = "{Binding Path=Raster.LeftCoordinatesX, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
-		<TextBox x:Name="txtBottomY" Text = "{Binding Path=Raster.BottomCoordinatesY, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="150,96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
+		<TextBox x:Name="txtLeftX" Text = "{Binding Path=Raster.LeftXCoordinate, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
+		<TextBox x:Name="txtBottomY" Text = "{Binding Path=Raster.BottomYCoordinate, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="150,96,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="104"/>
 		
 		<Label x:Name="lblMaxProb" Content="Max Prob." HorizontalAlignment="Left" Margin="10,120,0,0" VerticalAlignment="Top" Width="119"/>
 		<TextBox x:Name="txtMaxProb" Text = "{Binding Path=Raster.MaxProb, Mode = TwoWay}" HorizontalAlignment="Left" Height="23" Margin="10,146,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="64"/>
