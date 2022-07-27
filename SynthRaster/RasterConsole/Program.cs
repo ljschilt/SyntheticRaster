@@ -4,9 +4,12 @@ using System.Collections.Generic;
 
 namespace RasterConsole
 {
+    /// <summary>
+    /// A test run of the program independent of ArcGIS.
+    /// </summary>
     internal class Program
     {
-        public static List<RCPoint> Points = new List <RCPoint> {new Point(1289502.41, 696521.78), new Point(1300086.67, 708023.33), new Point(1285440.00, 716776.67)};
+        public static List<RCPoint> Points = new List <RCPoint> {new Point(1289502, 696521), new Point(1300086, 708023), new Point(1285440, 716776)};
         public static List<List<RCPoint>> RoadNetwork = new List<List<RCPoint>>();
 
         private static void Main(string[] args)

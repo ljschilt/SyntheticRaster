@@ -13,9 +13,7 @@ namespace RasterArc
 
         protected ArcDockpaneViewModel() 
         {
-            Raster = new BasicRaster()
-            {
-            };
+            Raster = new BasicRaster() { };
         }
 
         private ICommand _displayRaster = null;
@@ -29,6 +27,9 @@ namespace RasterArc
                 {
                     _displayRaster = new RelayCommand(() =>
                     {
+                        // Check for exceptions in the user inputs.
+                        // If there are user inputs, output the exceptions and let the user try again.
+                        // Otherwise, begin creating and displaying the raster.
                         if (Raster.HandleExceptions().Equals("No exceptions"))
                         {
                             Raster.CreateAndDisplayRaster();

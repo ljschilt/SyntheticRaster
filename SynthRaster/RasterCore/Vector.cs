@@ -2,6 +2,10 @@
 
 namespace RasterCore
 {
+    /// <summary>
+    /// A vector notes the direction and magnitude. 
+    /// This is used in the StationAndOffset class to perform its computation.
+    /// </summary>
     internal class Vector
     {
         private double X { get; set; }

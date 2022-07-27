@@ -59,6 +59,9 @@ namespace RasterArc.Models
         public string RasterFilename { get { return _rasterFilename; } set { SetProperty(ref _rasterFilename, value, () => RasterFilename); } }
         public string LayerName { get { return _layerName; } set { SetProperty(ref _layerName, value, () => LayerName); } }
 
+        /// <summary>
+        /// Creates the raster file and outputs it into the current Contents pane in ArcGIS, while noting the time it takes to do so.
+        /// </summary>
         public async void CreateAndDisplayRaster()
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -66,11 +69,15 @@ namespace RasterArc.Models
             StretchColorizerDefinition stretchColorizerDef = new StretchColorizerDefinition();
             await QueuedTask.Run(() =>
             {
+                // #1: Read through the road network.
                 GeometryReader geometryReader = new GeometryReader(CellSize, LayerName);
                 List<List<RCPoint>> RoadNetwork = geometryReader.CreateRoadNetworkList();
 
+                // #2: Populate the raster.
                 RasterCore.RasterCore coreRas = RasterCore.RasterCore.Zeroes(CellSize, NumColumns, NumRows, LeftXCoordinate, BottomYCoordinate);
                 coreRas.ComputeParametricSurface(RoadNetwork, InflectionWidth, MaxProb, MaxWidth, WidthToPeak, RoadWidth);
+
+                // #3: Write to the file and output it in ArcGIS.
                 coreRas.WriteToFile(RasterOutputDirectory, RasterFilename);
                 Map map = MapView.Active.Map;
                 string url = @RasterOutputDirectory + @"\" + @RasterFilename;
@@ -85,6 +92,10 @@ namespace RasterArc.Models
             _ = MessageBox.Show(stopWatchMessage);
         }
 
+        /// <summary>
+        /// Checks for argument exceptions in the user inputs and creates a string with messages representing the errors.
+        /// </summary>
+        /// <returns></returns>
         public string HandleExceptions()
         {
             string exceptionString = "";

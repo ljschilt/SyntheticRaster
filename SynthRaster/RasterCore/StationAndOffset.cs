@@ -3,6 +3,14 @@ using System.Collections.Generic;
 
 namespace RasterCore
 {
+    /// <summary>
+    /// Station and Offset is a relative coordinate system in accordance with a given baseline.
+    /// Station notes the distance along the baseline, and offset notes the Euclidean distance
+    /// from the baseline to the given point. The baselines here are reaches, or sections of the
+    /// road network split up by intersection points. This program calculates the station and offset
+    /// from a given segment in the reach and the location of the given raster cell. It uses
+    /// the station to calculate if the segment projects onto the raster cell.
+    /// </summary>
     internal class StationAndOffset : Vector
     {
         public double Station { get; private set; }
@@ -57,11 +65,24 @@ namespace RasterCore
             }
         }
 
+        /// <summary>
+        /// Calculate the Euclidean distance between two points.
+        /// </summary>
+        /// <param name="point1"></param>
+        /// <param name="point2"></param>
+        /// <returns></returns>
         public double CalculateDistance(RCPoint point1, RCPoint point2)
         {
             return Math.Sqrt(Math.Pow(point2.X - point1.X, 2) + Math.Pow(point2.Y - point1.Y, 2));
         }
 
+
+        /// <summary>
+        /// Calculate the station of a given point, where zero is the starting point of the entire reach.
+        /// </summary>
+        /// <param name="RoadPoint"></param>
+        /// <param name="RoadPoints"></param>
+        /// <returns></returns>
         public double CalculateStation(int RoadPoint, List<RCPoint> RoadPoints)
         {
             double station = 0;
@@ -72,6 +93,13 @@ namespace RasterCore
             return station;
         }
 
+        /// <summary>
+        /// Create a list of stations and offsets representing all of the projections from the reach
+        /// onto the given raster cell.
+        /// </summary>
+        /// <param name="rasterPoint"></param>
+        /// <param name="RoadPoints"></param>
+        /// <returns></returns>
         public static IReadOnlyList<StationAndOffset> CreateSOList(RCPoint rasterPoint, List<RCPoint> RoadPoints)
         {
             List<StationAndOffset> soList = new List<StationAndOffset>();

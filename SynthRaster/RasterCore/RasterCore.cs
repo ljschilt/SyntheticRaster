@@ -16,13 +16,20 @@ namespace RasterCore
         private string NoDataValue { get; set; }
         private double[,] RasterGrid { get; set; }
 
-        // Computation Functions: Calculates the values for the given raster point
+        // Probability Functions: Calculates the values for the given raster point
+        /// <summary>
+        /// 
+        /// </summary>
         private Func<double, double, double, double> SecperbolaFunc =
             (a, Pm, x) => (a * a * Pm /
                 ((x * x + a * a) * Math.Sqrt(((x * x) / (a * a)) + 1.0)));
 
         protected RasterCore() { }
 
+        /// <summary>
+        /// Read the raster file with the given file path and set the parameters to what is on the file.
+        /// </summary>
+        /// <param name="PathToOpen"></param>
         public RasterCore(string PathToOpen)
         {
             using (StreamReader sr = new StreamReader(PathToOpen))
@@ -63,6 +70,11 @@ namespace RasterCore
             }
         }
 
+        /// <summary>
+        /// Write to the raster file in proper ASC format.
+        /// </summary>
+        /// <param name="PathToWriteTo"></param>
+        /// <param name="fileName"></param>
         public void WriteToFile(string PathToWriteTo, string fileName)
         {
             try
@@ -100,14 +112,19 @@ namespace RasterCore
             catch { }
         }
 
+        /// <summary>
+        /// Using the road network and user inputs, populate the raster to represent the relationship between road network proximity and probability of urban development.
+        /// </summary>
+        /// <param name="RoadNetwork"></param>
+        /// <param name="inflectionWidth"></param>
+        /// <param name="maxProb"></param>
+        /// <param name="maxWidth"></param>
+        /// <param name="widthToPeak"></param>
+        /// <param name="RoadWidth"></param>
+        /// <param name="theFunc"></param>
         public void ComputeParametricSurface(List<List<RCPoint>> RoadNetwork, double inflectionWidth, double maxProb, double maxWidth, double widthToPeak, double RoadWidth, Func<double, double, double, double> theFunc = null)
         {
-            //int pointCounter = 0;
-            //foreach (List<RCPoint> Reach in RoadNetwork)
-            //{
-            //    pointCounter += Reach.Count;
-            //}
-
+            // Set the probability function. If no probability function was given, default to SecPerbola.
             Func<double, double, double, double> theFunction = theFunc;
             if (theFunction == null) { theFunction = SecperbolaFunc; }
 
@@ -118,7 +135,7 @@ namespace RasterCore
                 ((inflectionWidthSquared + maxWidthSquared) * Math.Sqrt(1.0 + (maxWidthSquared / inflectionWidthSquared)));
             double ProbDifference = maxProb - baseProb;
 
-            Parallel.For(0, NumRows, currentRow => 
+            Parallel.For(0, NumRows, currentRow => //
             //for (int currentRow = 0; currentRow < NumRows; currentRow++) //
             {
                 for (int currentColumn = 0; currentColumn < NumColumns; currentColumn++)
@@ -128,20 +145,21 @@ namespace RasterCore
                     RCPoint rasterPoint = new Point(
                         LeftXCoordinate + ((currentColumn + 0.5) * CellSize), 
                         BottomYCoordinate + (NumRows * CellSize) - ((currentRow + 0.5) * CellSize));
-                    //progressCounter++;
                     foreach (List<RCPoint> road in RoadNetwork)
                     {
                         double existingCellValue = RasterGrid[currentRow, currentColumn];
                         if (existingCellValue == int.Parse(NoDataValue)) { break; }
 
+                        // Calculate all of the stations and offsets by the current reach for the raster point and save the value with the smallest offset.
                         IReadOnlyList<StationAndOffset> allSOs = StationAndOffset.CreateSOList(rasterPoint, road);
-
                         StationAndOffset closestStationAndOffset = allSOs.OrderBy(so => Math.Abs(so.Offset)).FirstOrDefault();
 
+                        // If this offset is less than the current value's offset, continue.
                         if (FirstRoadList || closestStationAndOffset.Offset <= currentOffset)
                         {
                             currentOffset = closestStationAndOffset.Offset;
 
+                            // If the offset is less than the road width, then assign a NoDataValue to the raster cell, else calculate the probability at that cell.
                             if (closestStationAndOffset.Offset <= RoadWidth)
                             {
                                 RasterGrid[currentRow, currentColumn] = int.Parse(NoDataValue);
@@ -166,6 +184,7 @@ namespace RasterCore
                 }
             } ); //
 
+            // Iterate through the array to assign NoDataValues to any cells that have a value less than or equal to zero.
             for (int currentRow = 0; currentRow < NumRows; currentRow++)
             {
                 for (int currentColumn = 0; currentColumn < NumColumns; currentColumn++)
@@ -175,6 +194,17 @@ namespace RasterCore
             }
         }
 
+        /// <summary>
+        /// A default constructor that sets the raster array to be empty 
+        /// (where every cell has a value of 0)
+        /// </summary>
+        /// <param name="cellSize"></param>
+        /// <param name="numColumns"></param>
+        /// <param name="numRows"></param>
+        /// <param name="leftXCoordinate"></param>
+        /// <param name="bottomYCoordinate"></param>
+        /// <param name="noDataValue"></param>
+        /// <returns></returns>
         public static RasterCore Zeroes(double cellSize, int numColumns, int numRows, double leftXCoordinate, double bottomYCoordinate, string noDataValue = "-9999")
         {
             RasterCore newRaster = new RasterCore
@@ -197,17 +227,6 @@ namespace RasterCore
             }
 
             return newRaster;
-        }
-    }
-    public class Point : RCPoint
-    {
-        public double X { get; set; }
-        public double Y { get; set; }
-
-        public Point(double X, double Y)
-        {
-            this.X = X;
-            this.Y = Y;
         }
     }
 }
