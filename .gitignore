@@ -49,6 +49,7 @@ Raster Files/
 *.rar
 *.tar
 *.zip
+!SyntheticRasterPackageFiles.zip
 ######################
 # Logs and databases #
 ######################
