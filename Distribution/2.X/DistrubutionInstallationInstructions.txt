@@ -1,0 +1,16 @@
+1. Get the .zip file from the indicated location.
+2. Extract the files to a temp folder or your downloads folder.
+3. Create a new directory on your machine (or verify that it is already there): C:\Users\username\Documents\ArcGIS\AddIns
+
+4. Under the AddIns directory create a new folder, "Synthetic Rasters".
+
+5. Move the files you extracted to the temp folder into the Synthetic Rasters folder.
+
+6. Open ArcGIS Pro. On the Project tab, open Add-In Manager. On its "My Add-Ins" tab, you see all the add-ins you have. Select the Options tab and the Add Folder button there.
+
+7. Remember the folder we created in step 3 (above)? Now paste that folder name into the Name text box of the Add Folder (or Select Folder) dialog box.
+
+At this point, Arc knows where to find the add-in. But you have to ...
+8. Close ArcGIS Pro and restart it.
+
+to make it scan that folder for add-ins. After restarting ArcGIS Pro, you should have a new tab at the top of the application window: Add-In. Select that tab and a button is now on the ribbon named Create Synthetic Raster. Select that button to open the dialog and use the tool.
