@@ -40,7 +40,7 @@ namespace RasterArc.Models
             _maxWidth = 962.673;
             _widthToPeak = 300;
             _roadWidth = 50;
-            _rasterOutputDirectory = @"C:\Users\lukes\OneDrive\Documents\Research Files\SyntheticRaster\SynthRaster\Raster Files";
+            _rasterOutputDirectory = @"";
             _rasterFilename = "TestRun.asc";
             _layerName = "Bethel&WhiteEagleIntersection";
         }
@@ -134,7 +134,7 @@ namespace RasterArc.Models
             {
                 if (exception) { exceptionString += "\n"; }
                 exception = true;
-                exceptionString += "Invalid output directory. Check if the file path exists!";
+                exceptionString += "Invalid Output Directory. Check if the file path exists!";
             }
 
             FeatureLayer layer = MapView.Active.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>()
